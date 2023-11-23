@@ -1,0 +1,184 @@
+<html>
+
+<head>
+  <title>Chat UI Design</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="./Asset/css/style.css">
+</head>
+
+<body>
+  <div class="chat">
+
+    <div class="sidebar">
+
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="검색 ... ">
+        <i class="fa fa-search"></i>
+      </div>
+
+      <div class="contacts">
+        <ul id="channelList">
+
+          <li>
+            <a>
+              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" alt="Avatar">
+              <div class="contact">
+                <div class="name" data-id="" data-time=1>사용자1</div>
+                <div class="message">마지막 메세지....</div>
+              </div>
+            </a>
+          </li>
+
+          <li class="active">
+            <a>
+              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" alt="Avatar">
+              <div class="contact">
+                <div class="name" data-id="" data-time="3">사용자2</div>
+                <div class="message">마지막 메세지....</div>
+              </div>
+              <div class="notification">9</div>
+            </a>
+          </li>
+
+          <li>
+            <a>
+              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" alt="Avatar">
+              <div class="contact">
+                <div class="name" data-id="" data-time="2">사용자3</div>
+                <div class="message">마지막 메세지....</div>
+              </div>
+            </a>
+          </li>
+
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="content">
+
+      <div class="message-header">
+        <div class="user-info">
+          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+          <div class="user">
+            <div id="channelTitle" class="name">사용자1 외 1명</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <ul>
+            <li>
+              <a href="#" id="info">
+                <i class="fa fa-info-circle"></i>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i class="fa fa-ellipsis-v"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="messageList" class="message-content">
+
+        <div class="date">2023년 10월10일</div>
+
+        <div class="message me">
+          <div class="bubble">
+            내 메세지
+          </div>
+          <div class="time">1월 1일 오전 04:23</div>
+        </div>
+
+        <div class="message me">
+          <div class="bubble">
+            내 메세지2
+          </div>
+          <div class="time">1월 1일 오전 04:23</div>
+        </div>
+
+        <div class="noti">
+          *** 참가했습니다.
+        </div>
+
+        <div class="message">
+          <img class="user-image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+          <div class="name">이름</div>
+          <div class="bubble">
+            상대 메세지
+          </div>
+          <div class="time">1월 1일 오후 04:23</div>
+        </div>
+
+        <div class="message">
+          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+          <div class="name">이름</div>
+          <img class="image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+
+          <div class="time">1월 1일 오후 04:23</div>
+        </div>
+
+        <div class="message me">
+          <img class="image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+          <div class="time">1월 1일 오전 04:23</div>
+        </div>
+
+        <div class="message me">
+          <img class="image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+          <div class="time">1월 1일 오전 04:23</div>
+        </div>
+
+
+
+      </div>
+
+      <div class="message-form">
+        <ul>
+          <li class="input">
+            <input id="textInput" type="text" placeholder="메시지 입력..">
+          </li>
+
+          <li class="send-btn">
+            <a id="sendBtn" href="">
+              <i class="fas fa-paper-plane"></i>
+            </a>
+          </li>
+
+          <li class="image-btn">
+            <a id="imageBtn" href="">
+              <i class="fa fa-image"></i>
+            </a>
+          </li>
+
+          <li class="video-btn">
+            <a id="videoBtn" href="">
+              <i class="fa fa-film"></i>
+            </a>
+          </li>
+
+          <li class="file-btn">
+            <a id="fileBtn" href="">
+              <i class="fas fa-file"></i>
+            </a>
+          </li>
+
+        </ul>
+
+        <input style="display: none;" type="file" name="file" id="image" accept=".png, .jpg, .webp" />
+        <input style="display: none;" type="file" name="file" id="video" accept=".mp4" />
+        <input style="display: none;" type="file" name="file" id="file" />
+
+      </div>
+
+    </div>
+  </div>
+
+</body>
+
+<script src="./talkplus-0.4.5.js"></script>
+<script src="./Util/jquery.min.js"></script>
+<script type="module" src="./index.js"></script>
+
+</html>
