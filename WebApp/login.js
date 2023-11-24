@@ -64,5 +64,5 @@ function redirectToApp(userinfo) {
 	sessionStorage.setItem("userinfo", userinfoString);
 
 	// 대상 페이지로 리디렉션
-	window.location.href = "./WebApp/index.html";
+	window.location.href = "./index.html";
 }

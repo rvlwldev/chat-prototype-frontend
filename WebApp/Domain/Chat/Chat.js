@@ -139,11 +139,38 @@ export class Chat {
 
 	receiveMessage(message) {
 		this.#messageMap.get(this.currentChannelId).push(message);
-		this.messageTemplate.append(message);
 
+		this.messageTemplate.append(message);
 		this.channelTemplate.setLastMessageText(message);
 
+		// if (this.CHAT.currentChannelId != event.message.channelId)
+		// 	this.CHAT.notifyMessage(event.message);
+
+		if (message.channelId != this.currentChannelId) this.#notifyMessage(message);
+
 		if (message.userId == User.INFO.id) CommonDOMevent.scrollDown();
+	}
+
+	#notifyMessage(message) {
+		let body;
+		let type = message.data.type;
+
+		switch (type) {
+			case "text":
+				body = message.text;
+				break;
+			case "file":
+				body = "[파일]";
+				break;
+			case "image":
+				body = "[이미지]";
+				break;
+			case "video":
+				body = "[동영상]";
+				break;
+		}
+
+		if (type) this.messageTemplate.notify(message.username, body);
 	}
 
 	sendTextMessasge(messageText) {
@@ -160,6 +187,7 @@ export class Chat {
 	async sendImageMessage(file) {
 		let body = {
 			senderId: User.INFO.id,
+			type: file.type.split("/")[0],
 			file: file,
 			fileName: file.name,
 			fileSize: file.size,
@@ -177,11 +205,41 @@ export class Chat {
 		console.log("sendImageMessage");
 	}
 
-	sendVideoMessage() {
-		console.log("sendVideoMessage");
+	async sendVideoMessage(file) {
+		let body = {
+			senderId: User.INFO.id,
+			type: file.type.split("/")[0],
+			file: file,
+			fileName: file.name,
+			fileSize: file.size,
+		};
+
+		await this.API.postForm("channels/" + this.currentChannelId + "/messages", body)
+			.then((res) => {
+				console.log(res);
+				return res;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 
-	sendFileMessage() {
-		console.log("sendFileMessage");
+	async sendFileMessage(file) {
+		let body = {
+			senderId: User.INFO.id,
+			type: "file",
+			file: file,
+			fileName: file.name,
+			fileSize: file.size,
+		};
+
+		await this.API.postForm("channels/" + this.currentChannelId + "/messages", body)
+			.then((res) => {
+				console.log(res);
+				return res;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 }

@@ -47,14 +47,14 @@ export class MessageTemplate extends MessageEvent {
 			case "text":
 				return isUserMessage ? this.toMyTextHTML(message) : this.toTextHTML(message);
 			case "file":
-				return isUserMessage ? this.toMyTextHTML(message) : this.toFileHTML(message);
+				return isUserMessage ? this.toMyFileHTML(message) : this.toFileHTML(message);
 			case "image":
-				return isUserMessage ? this.toMyTextHTML(message) : this.toImageHTML(message);
+				return isUserMessage ? this.toMyImageHTML(message) : this.toImageHTML(message);
 			case "video":
-				return isUserMessage ? this.toMyTextHTML(message) : this.toVideoHTML(message);
+				return isUserMessage ? this.toMyVideoHTML(message) : this.toVideoHTML(message);
 			default:
 				console.error("올바르지 않은 메세지");
-				console.error(message);
+				console.error("message info ", message);
 				break;
 		}
 	}
@@ -68,11 +68,39 @@ export class MessageTemplate extends MessageEvent {
 		`);
 	}
 	toMyVideoHTML(message) {
-		console.log("비디오 어펜드!");
+		let userImage = message.profileImageUrl
+			? message.profileImageUrl
+			: Chat.NO_USER_PROFILE_IMAGE;
+
+		let extension = Stringify.getExtension(message.data.filePath);
+
+		return $(`
+			<div class="message me">
+				<div class="bubble" data-userId="${message.userId}" data-messageId="${message.id}">
+					<video class="video" controls>
+						<source src="${message.data.filePath}" type="video/${extension}">
+					</video>
+				</div>
+				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
+			</div>
+		`);
 	}
+
 	toMyFileHTML(message) {
-		console.log("파일 어펜드!");
+		return $(`
+			<div class="message me">
+				<div class="file-info">
+					<div class="file-name">${message.data.fileName}</div>
+					<div class="file-size">용량: ${Stringify.formatBytes(message.data.fileSize)}</div>
+					<a class="download-link" href="${message.data.filePath}" target="_blank" download>
+						Download
+					</a>
+				</div>
+				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
+			</div>
+		`);
 	}
+
 	toMyTextHTML(message) {
 		return $(`
 			<div class="message me">
@@ -84,15 +112,73 @@ export class MessageTemplate extends MessageEvent {
 		`);
 	}
 
-	toImageHTML(message) {}
-	toVideoHTML(message) {}
-	toFileHTML(message) {}
-	toTextHTML(message) {
+	toImageHTML(message) {
+		let userImage = message.profileImageUrl
+			? message.profileImageUrl
+			: Chat.NO_USER_PROFILE_IMAGE;
+
 		return $(`
 			<div class="message">
-				<img class="user-image" src="${
-					message.profileImageUrl ? message.profileImageUrl : Chat.NO_USER_PROFILE_IMAGE
-				}">
+				<img class="user-image" src="${userImage}">
+				<div class="name">${message.username}</div>
+				<img class="image" src="${message.data.filePath}">
+				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
+			</div>
+		`);
+	}
+
+	toVideoHTML(message) {
+		let userImage = message.profileImageUrl
+			? message.profileImageUrl
+			: Chat.NO_USER_PROFILE_IMAGE;
+
+		let extension = Stringify.getExtension(message.data.filePath);
+
+		return $(`
+			<div class="message">
+				<img class="user-image" src="${userImage}">
+				<div class="name">${message.username}</div>
+				<div class="bubble" data-userId="${message.userId}" data-messageId="${message.id}">
+					<video class="video" controls>
+						<source src="${message.data.filePath}" type="video/${extension}">
+					</video>
+				</div>
+				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
+			</div>
+		`);
+	}
+
+	toFileHTML(message) {
+		let userImage = message.profileImageUrl
+			? message.profileImageUrl
+			: Chat.NO_USER_PROFILE_IMAGE;
+
+		return $(`
+			<div class="message">
+				<img class="user-image" src="${userImage}">
+				<div class="name">${message.username}</div>
+				
+				<div class="file-info">
+					<div class="file-name">${message.data.fileName}</div>
+					<div class="file-size">용량: ${Stringify.formatBytes(message.data.fileSize)}</div>
+					<a class="download-link" href="${message.data.filePath}" target="_blank" download>
+						Download
+					</a>
+				</div>
+
+				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
+			</div>
+		`);
+	}
+
+	toTextHTML(message) {
+		let userImage = message.profileImageUrl
+			? message.profileImageUrl
+			: Chat.NO_USER_PROFILE_IMAGE;
+
+		return $(`
+			<div class="message">
+				<img class="user-image" src="${userImage}">
 				<div class="name">${message.username}</div>
 				<div class="bubble" data-userId="${message.userId}" data-messageId="${message.id}">
 					${message.text}

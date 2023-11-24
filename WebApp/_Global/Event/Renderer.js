@@ -1,15 +1,14 @@
 export class Renderer {
 	constructor() {
 		try {
-			if (nativeDesktopApp) window.nativeDesktopApp = nativeDesktopApp;
+			if (nativeDesktopApp) nativeDesktopApp;
 		} catch (err) {
 			window.nativeDesktopApp = undefined;
 		}
 	}
 
 	alert(message) {
-		if (typeof nativeDesktopApp != "undefined")
-			nativeDesktopApp.alert("by electron : " + message);
+		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.alert(message);
 		else alert("by electron : " + message);
 	}
 
@@ -24,5 +23,9 @@ export class Renderer {
 			e.preventDefault();
 			nativeDesktopApp.trigger.contextMenu(e, registeredEventName, paramObj);
 		}
+	}
+
+	notify(title, body) {
+		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.showNotification(title, body);
 	}
 }

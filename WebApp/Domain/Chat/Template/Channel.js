@@ -43,9 +43,7 @@ export class ChannelTemplate extends ChannelEvent {
 		let lastText = channel.lastMessage ? channel.lastMessage.text : "";
 		let lastMessageId = channel.lastMessage ? channel.lastMessage.id : "";
 
-		if (lastText.length > 10) {
-			lastText = lastText.slice(0, maxLength) + "...";
-		}
+		if (lastText.length > 10) lastText = lastText.slice(0, 9) + "...";
 
 		return $(`
 			<li data-id="${channel.id}">

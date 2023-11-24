@@ -35,4 +35,9 @@ export class Stringify extends String {
 
 		return result;
 	}
+
+	static getExtension(filePath) {
+		if (typeof filePath === "string") return filePath.toLowerCase().split(".").pop();
+		else return null;
+	}
 }

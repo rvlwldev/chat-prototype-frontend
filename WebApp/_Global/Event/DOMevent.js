@@ -27,8 +27,8 @@ export class CommonDOMevent {
 
 	static setMessageInputEnterCallback(callback) {
 		$("#textInput").on("keypress", (e) => {
-			if (e.keyCode == 13) {
-				let messageText = $("#textInput").val();
+			let messageText = $("#textInput").val();
+			if (e.keyCode == 13 && messageText) {
 				callback.bind(this)(messageText);
 
 				$("#textInput").val("");

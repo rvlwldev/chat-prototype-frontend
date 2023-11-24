@@ -1,9 +1,21 @@
-const { app, BrowserWindow, ipcMain, dialog, globalShortcut, Menu, MenuItem } = require("electron");
+const {
+	app,
+	BrowserWindow,
+	ipcMain,
+	dialog,
+	globalShortcut,
+	Menu,
+	MenuItem,
+	Notification,
+} = require("electron");
 const path = require("path");
 
 /** @type BrowserWindow */ var MAIN_WINDOW;
 
 const CALLBACK_NAME_MAP = new Map();
+
+app.commandLine.appendSwitch("disable-http-cache");
+app.setPath("userData", path.join(__dirname, "userData"));
 
 app.whenReady()
 	.then(createMainWindow)
@@ -21,6 +33,11 @@ function createMainWindow() {
 			nodeIntegration: false,
 			preload: path.join(__dirname, "Configuration", "Preload.js"),
 		},
+	});
+
+	MAIN_WINDOW.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+		details.requestHeaders.Origin = "ELECTRON";
+		callback({ cancel: false, requestHeaders: details.requestHeaders });
 	});
 
 	// NOTE : 개발용
@@ -42,6 +59,15 @@ function initIpcRenderer() {
 }
 
 function initCallbackEmitter() {
+	ipcMain.on("show-notification", (event, args) => {
+		const { title, body } = args;
+
+		const notification = new Notification({ title, body });
+
+		notification.show();
+		setTimeout(() => notification.close(), 3000);
+	});
+
 	ipcMain.on(
 		"register-client-context-menu",
 		(event, contextEventName, menuName, callbackName) => {

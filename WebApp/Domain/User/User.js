@@ -14,21 +14,29 @@ export class User {
 		if (this.#setGlobalUserInfo()) {
 			const CHAT_API = new APIHandler("http://192.168.2.65:3000/");
 
-			this.#login().then(() =>
-				CHAT_API.post("init/" + User.INFO.id)
-					.then(() => (this.CHAT = new Chat(User.INFO, User.CLIENT, CHAT_API)))
-					.then(() => this.initializeChatEventListner())
-					.then(() => this.initializeSDKeventListner())
-			);
+			User.CLIENT = new TalkPlus.Client({ appId: "7033fa01-881d-46e5-8ed2-63c472d83a89" });
+
+			if (User.INFO.id.startsWith("admin"))
+				CHAT_API.post("admin/" + User.INFO.id).then(async (response) => {
+					this.CHAT = new Chat(User.INFO, User.CLIENT, CHAT_API);
+
+					await this.initializeChatEventListner();
+					this.initializeSDKeventListner();
+					await this.#SDK_login(response);
+				});
+			else
+				this.#login().then(() =>
+					CHAT_API.post("init/" + User.INFO.id)
+						.then(() => (this.CHAT = new Chat(User.INFO, User.CLIENT, CHAT_API)))
+						.then(() => this.initializeChatEventListner())
+						.then(() => this.initializeSDKeventListner())
+				);
 		} else console.error("올바르지 않은 로그인");
 	}
 
 	#setGlobalUserInfo() {
 		try {
-			let params = new URLSearchParams(window.location.search);
-			User.INFO = JSON.parse(decodeURIComponent(params.get("data")));
-
-			console.log(User.INFO);
+			User.INFO = JSON.parse(sessionStorage.getItem("userinfo"));
 
 			return true;
 		} catch (err) {
@@ -40,14 +48,10 @@ export class User {
 		await this.CI_API.get("token", { userId: User.INFO.id })
 			.then((response) => {
 				User.CLIENT = new TalkPlus.Client({ appId: response.AppID });
-
 				return this.#SDK_login(response);
 			})
 			.catch((err) => {
-				// TODO : Interceptor 구현
-				ipcRenderer.send("alert", "에러");
 				console.log(err);
-
 				return false;
 			});
 	}
@@ -64,10 +68,7 @@ export class User {
 
 	initializeSDKeventListner() {
 		User.CLIENT.on("event", (event) => {
-			if (event.type === "message") {
-				this.CHAT.receiveMessage(event.message);
-				console.log("new message received");
-			}
+			if (event.type === "message") this.CHAT.receiveMessage(event.message);
 
 			if (event.type === "channelAdded") {
 				this.CHAT.addChannel(event.channel);

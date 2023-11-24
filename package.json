@@ -2,10 +2,11 @@
   "name": "electron",
   "version": "1.0.0",
   "description": "",
-  "main": "Main.js",
+  "main": "main.js",
   "type": "commonjs",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +14,20 @@
     "bootstrap": "^5.3.2",
     "electron": "27.0.4",
     "jquery": "^3.7.1"
+  },
+  "devDependencies": {
+    "electron": "27.0.4",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "test-electron-intranet-chat",
+    "productName": "chat-prototype",
+    "directories": {
+      "output": "out"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": ""
+    }
   }
 }
