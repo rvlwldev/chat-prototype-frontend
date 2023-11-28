@@ -25,7 +25,11 @@ export class MessageEvent extends Renderer {
 	}
 
 	onUserImageClickEvent(HTML) {
-		HTML.find(".user-image").on("click", this.userImageClickEvent);
+		try {
+			HTML.find(".user-image").on("click", this.userImageClickEvent);
+		} catch (err) {
+			console.log(HTML);
+		}
 	}
 
 	userImageClickEvent(e) {

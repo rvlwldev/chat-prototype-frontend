@@ -1,7 +1,5 @@
 import { CommonDOMevent } from "../../_Global/Event/DOMevent.js";
-
 import { APIHandler } from "../../Util/APIHandler.js";
-
 import { Chat } from "../Chat/Chat.js";
 
 export class User {
@@ -36,7 +34,10 @@ export class User {
 
 	#setGlobalUserInfo() {
 		try {
-			User.INFO = JSON.parse(sessionStorage.getItem("userinfo"));
+			let userInfo = sessionStorage.getItem("userinfo");
+			if (!userInfo) throw new Error("로그인 정보 없이 접근");
+
+			User.INFO = JSON.parse(userInfo);
 
 			return true;
 		} catch (err) {

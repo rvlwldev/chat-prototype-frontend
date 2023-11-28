@@ -53,9 +53,9 @@ export class MessageTemplate extends MessageEvent {
 			case "video":
 				return isUserMessage ? this.toMyVideoHTML(message) : this.toVideoHTML(message);
 			default:
-				console.error("올바르지 않은 메세지");
-				console.error("message info ", message);
-				break;
+				console.log("올바르지 않은 메세지");
+				console.log(message);
+				return isUserMessage ? this.toMyTextHTML(message) : this.toTextHTML(message);
 		}
 	}
 
@@ -68,10 +68,6 @@ export class MessageTemplate extends MessageEvent {
 		`);
 	}
 	toMyVideoHTML(message) {
-		let userImage = message.profileImageUrl
-			? message.profileImageUrl
-			: Chat.NO_USER_PROFILE_IMAGE;
-
 		let extension = Stringify.getExtension(message.data.filePath);
 
 		return $(`

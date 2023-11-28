@@ -10,7 +10,8 @@ const {
 } = require("electron");
 const path = require("path");
 
-/** @type BrowserWindow */ var MAIN_WINDOW;
+/** @type BrowserWindow */
+var MAIN_WINDOW;
 
 const CALLBACK_NAME_MAP = new Map();
 
@@ -26,8 +27,8 @@ app.whenReady()
 
 function createMainWindow() {
 	MAIN_WINDOW = new BrowserWindow({
-		width: 1920,
-		height: 1080,
+		width: 1920, // 기본 가로 사이즈
+		height: 1080, // 기본 세로 사이즈
 		webPreferences: {
 			contextIsolation: true,
 			nodeIntegration: false,
@@ -42,18 +43,16 @@ function createMainWindow() {
 
 	// NOTE : 개발용
 	MAIN_WINDOW.webContents.openDevTools();
-
 	MAIN_WINDOW.loadFile("login.html");
 	MAIN_WINDOW.on("closed", () => app.quit());
 }
 
 function initIpcRenderer() {
-	// alert
 	ipcMain.on("alert", (event, message) => {
 		dialog.showMessageBoxSync({
 			type: "info",
 			message: message,
-			buttons: ["OK !"],
+			buttons: ["확인"],
 		});
 	});
 }
@@ -63,8 +62,8 @@ function initCallbackEmitter() {
 		const { title, body } = args;
 
 		const notification = new Notification({ title, body });
-
 		notification.show();
+
 		setTimeout(() => notification.close(), 3000);
 	});
 
@@ -105,8 +104,6 @@ function initCallbackEmitter() {
 function blockGlobalShortcut() {
 	// globalShortcut.register("CommandOrControl+W", () => {});
 	// globalShortcut.register("CommandOrControl+R", () => {});
-}
 
-app.on("will-quit", () => {
-	globalShortcut.unregisterAll();
-});
+	app.on("will-quit", () => globalShortcut.unregisterAll());
+}

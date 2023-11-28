@@ -9,9 +9,6 @@ import { APIHandler } from "../../Util/APIHandler.js";
 import { CommonDOMevent } from "../../_Global/Event/DOMevent.js";
 
 export class Chat {
-	// static NO_CHANNEL_IMAGE = "C:/projects/Chat-app/electron/WebApp/Asset/img/no_picture_user.png";
-	// static NO_USER_PROFILE_IMAGE = "C:/projects/Chat-app/electron/WebApp/Asset/img/no_picture_user.png";
-
 	static NO_CHANNEL_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
 	static NO_USER_PROFILE_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
 
@@ -143,11 +140,7 @@ export class Chat {
 		this.messageTemplate.append(message);
 		this.channelTemplate.setLastMessageText(message);
 
-		// if (this.CHAT.currentChannelId != event.message.channelId)
-		// 	this.CHAT.notifyMessage(event.message);
-
 		if (message.channelId != this.currentChannelId) this.#notifyMessage(message);
-
 		if (message.userId == User.INFO.id) CommonDOMevent.scrollDown();
 	}
 

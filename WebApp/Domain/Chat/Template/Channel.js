@@ -48,7 +48,7 @@ export class ChannelTemplate extends ChannelEvent {
 		return $(`
 			<li data-id="${channel.id}">
 				<a href="">
-				<img src="${imageUrl}" alt="Avatar"> 
+				<img src="${imageUrl}"> 
 				<div class="contact">
 					<div class="name" data-time="${channel.updatedAt}">${name}</div>
 					<div class="message" data-lastMessageId="${lastMessageId}">${lastText}</div>

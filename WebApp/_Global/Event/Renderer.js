@@ -9,7 +9,7 @@ export class Renderer {
 
 	alert(message) {
 		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.alert(message);
-		else alert("by electron : " + message);
+		else alert(message);
 	}
 
 	registerDynamicContextMenu(groupName, menuName, callback) {
