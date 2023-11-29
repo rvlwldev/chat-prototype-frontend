@@ -3,10 +3,11 @@ import { ChatMap } from "./Classes/ChatMap.js";
 
 import { MessageTemplate } from "./Template/Message.js";
 import { ChannelTemplate } from "./Template/Channel.js";
-import { User } from "../User/User.js";
 
 import { APIHandler } from "../../Util/APIHandler.js";
 import { CommonDOMevent } from "../../_Global/Event/DOMevent.js";
+
+import { User } from "../User/User.js";
 
 export class Chat {
 	static NO_CHANNEL_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
@@ -87,14 +88,21 @@ export class Chat {
 	hasPrivateChannelWith(userId) {}
 
 	async activateChannel(channelId) {
-		if (!this.#messageMap.has(channelId)) return;
-
-		this.messageTemplate.clear();
 		this.currentChannelId = channelId;
+		const MESSAGES = this.#messageMap.get(this.currentChannelId);
 
-		this.#messageMap.get(channelId).hasNext = true;
-
-		await this.loadMessage();
+		if (MESSAGES.length < 1) {
+			this.messageTemplate.clear();
+			await this.loadNewMessages();
+			CommonDOMevent.scroll.down();
+			return;
+		} else if (MESSAGES.length > 0) {
+			await this.loadMoreMessages();
+		} else {
+			this.messageTemplate.clear();
+			this.messageTemplate.prependAll(MESSAGES);
+			CommonDOMevent.scroll.down();
+		}
 	}
 
 	async leaveChannel(channelId) {}
@@ -102,46 +110,51 @@ export class Chat {
 	/*
 	메세지배열 : 인덱스 숫자가 낮을 수록 최근
 	더 불러오면 뒤에 붙이기
+	새로운 메세지는 앞에 붙이기
 	*/
 
-	// TODO : 비동기 버그
-	async loadMessage() {
+	// TODO : 비동기 버그 찾기
+	// TODO : 다이나믹 로딩
+	async loadNewMessages() {
+		/** @type MessageArray */
+		const MESSAGES = this.#messageMap.get(this.currentChannelId);
+
+		let requestURL = `channels/${this.currentChannelId}/messages`;
+		await this.API.get(requestURL).then((/** @type Array */ response) => {
+			MESSAGES.hasNext = response.hasNext;
+			MESSAGES.push(...response.messages);
+			response.messages.forEach((message) => this.messageTemplate.prepend(message));
+
+			CommonDOMevent.scroll.down();
+		});
+	}
+
+	async loadMoreMessages() {
+		/** @type MessageArray */
 		const MESSAGES = this.#messageMap.get(this.currentChannelId);
 		if (!MESSAGES.hasNext) return;
 
-		const isNewMessageLoad = MESSAGES.length < 1;
-
 		let requestURL = `channels/${this.currentChannelId}/messages`;
-		if (!isNewMessageLoad) requestURL += `/lastMessageId=${MESSAGES.getLast().id}`;
+		requestURL += `/lastMessageId=${MESSAGES.getLast().id}`;
 
 		await this.API.get(requestURL).then((/** @type Array */ response) => {
 			MESSAGES.hasNext = response.hasNext;
-			let responseMessages = response.messages;
-
-			if (isNewMessageLoad) {
-				MESSAGES.front(...responseMessages.reverse());
-				responseMessages.forEach((message) => this.messageTemplate.append(message));
-
-				CommonDOMevent.scrollDown();
-			} else {
-				CommonDOMevent.scroll.saveLocation();
-
-				MESSAGES.push(...responseMessages);
-				responseMessages.forEach((message) => this.messageTemplate.prepend(message));
-
-				CommonDOMevent.scroll.restoreLocation();
-			}
+			MESSAGES.push(...response.messages);
+			response.messages.forEach((message) => this.messageTemplate.append(message));
 		});
 	}
 
 	receiveMessage(message) {
-		this.#messageMap.get(this.currentChannelId).push(message);
+		if (message.channelId == this.currentChannelId) {
+			this.#messageMap.get(this.currentChannelId).push(message);
+			this.messageTemplate.append(message);
+		}
 
-		this.messageTemplate.append(message);
 		this.channelTemplate.setLastMessageText(message);
 
 		if (message.channelId != this.currentChannelId) this.#notifyMessage(message);
-		if (message.userId == User.INFO.id) CommonDOMevent.scrollDown();
+		// if (message.userId == User.INFO.id)
+		CommonDOMevent.scroll.down();
 	}
 
 	#notifyMessage(message) {

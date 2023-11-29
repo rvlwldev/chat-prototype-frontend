@@ -53,8 +53,8 @@ export class MessageTemplate extends MessageEvent {
 			case "video":
 				return isUserMessage ? this.toMyVideoHTML(message) : this.toVideoHTML(message);
 			default:
-				console.log("올바르지 않은 메세지");
-				console.log(message);
+				// console.log("올바르지 않은 메세지 : " + message.text);
+				// console.log(message);
 				return isUserMessage ? this.toMyTextHTML(message) : this.toTextHTML(message);
 		}
 	}

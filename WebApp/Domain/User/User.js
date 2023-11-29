@@ -100,6 +100,6 @@ export class User {
 		CommonDOMevent.setVideoSendCallback.bind(this.CHAT)(this.CHAT.sendVideoMessage);
 		CommonDOMevent.setFileSendCallback.bind(this.CHAT)(this.CHAT.sendFileMessage);
 
-		CommonDOMevent.scroll.setEvent.bind(this.CHAT)(this.CHAT.loadMessage);
+		CommonDOMevent.scroll.setEvent.bind(this.CHAT)(this.CHAT.loadMoreMessages);
 	}
 }

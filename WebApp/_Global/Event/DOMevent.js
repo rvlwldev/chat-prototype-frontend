@@ -70,13 +70,13 @@ export class CommonDOMevent {
 		});
 	}
 
-	static scrollDown() {
-		let target = $("#messageList");
-		target.scrollTop(target.prop("scrollHeight"));
-	}
-
 	static scroll = {
 		height: 0,
+
+		down: () => {
+			let target = $("#messageList");
+			target.scrollTop(target.prop("scrollHeight"));
+		},
 
 		saveLocation: () => {
 			let height = 0;
@@ -102,6 +102,7 @@ export class CommonDOMevent {
 		},
 
 		isScrollingUp: false,
+
 		setEvent: function (callback) {
 			const event = async (e) => {
 				const currentScrollTop = $("#messageList").scrollTop();

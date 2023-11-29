@@ -14,7 +14,8 @@ const appAlert = (message) => {
 };
 
 function CI_SERVER_LOGIN() {
-	/** @type String */ const ID = $("#username").val();
+	/** @type String */
+	const ID = $("#username").val();
 	const PW = $("#password").val();
 	const DB = "cug";
 
@@ -54,15 +55,6 @@ function CI_SERVER_LOGIN() {
 }
 
 function redirectToApp(userinfo) {
-	// const userinfoString = encodeURIComponent(JSON.stringify(userinfo));
-	// const url = "./WebApp/index.html?data=" + userinfoString;
-	// window.location.href = url;
-
-	const userinfoString = JSON.stringify(userinfo);
-
-	// 사용자 정보를 sessionStorage에 저장
-	sessionStorage.setItem("userinfo", userinfoString);
-
-	// 대상 페이지로 리디렉션
+	sessionStorage.setItem("userinfo", JSON.stringify(userinfo));
 	window.location.href = "./index.html";
 }

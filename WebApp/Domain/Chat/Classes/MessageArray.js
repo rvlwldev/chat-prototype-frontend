@@ -11,9 +11,13 @@ export class MessageArray extends Array {
 		for (const element of elements) this.unshift(element);
 	}
 
+	getFirst() {
+		if (this.length < 1) return undefined;
+		return this[0];
+	}
+
 	getLast() {
 		if (this.length < 1) return undefined;
-
 		return this[this.length - 1];
 	}
 }
