@@ -85,76 +85,73 @@ export class Chat {
 		return this.#memberMap.hasId(channelId);
 	}
 
-	hasPrivateChannelWith(userId) {}
-
-	async activateChannel(channelId) {
+	/*
+		메세지배열 : 인덱스 숫자가 낮을 수록 최근
+		더 불러오면 뒤에 붙이기
+		새로운 메세지는 앞에 붙이기
+	*/
+	// TODO : 비동기 버그 찾기
+	// TODO : 다이나믹 로딩
+	activateChannel(channelId) {
 		this.currentChannelId = channelId;
 		const MESSAGES = this.#messageMap.get(this.currentChannelId);
-
-		if (MESSAGES.length < 1) {
-			this.messageTemplate.clear();
-			await this.loadNewMessages();
-			CommonDOMevent.scroll.down();
-			return;
-		} else if (MESSAGES.length > 0) {
-			await this.loadMoreMessages();
-		} else {
-			this.messageTemplate.clear();
-			this.messageTemplate.prependAll(MESSAGES);
-			CommonDOMevent.scroll.down();
-		}
+		if (MESSAGES.length < 1) this.loadNewMessages();
+		else this.loadMoreMessages();
 	}
 
 	async leaveChannel(channelId) {}
 
-	/*
-	메세지배열 : 인덱스 숫자가 낮을 수록 최근
-	더 불러오면 뒤에 붙이기
-	새로운 메세지는 앞에 붙이기
-	*/
-
-	// TODO : 비동기 버그 찾기
-	// TODO : 다이나믹 로딩
 	async loadNewMessages() {
 		/** @type MessageArray */
 		const MESSAGES = this.#messageMap.get(this.currentChannelId);
 
 		let requestURL = `channels/${this.currentChannelId}/messages`;
 		await this.API.get(requestURL).then((/** @type Array */ response) => {
-			MESSAGES.hasNext = response.hasNext;
-			MESSAGES.push(...response.messages);
-			response.messages.forEach((message) => this.messageTemplate.prepend(message));
+			if (!response.messages) return;
 
-			CommonDOMevent.scroll.down();
+			MESSAGES.hasNext = response.hasNext;
+			MESSAGES.pushAll(response.messages);
+
+			this.messageTemplate.clear();
+			this.messageTemplate.prependAll(MESSAGES);
 		});
+
+		CommonDOMevent.scroll.down();
 	}
 
 	async loadMoreMessages() {
 		/** @type MessageArray */
 		const MESSAGES = this.#messageMap.get(this.currentChannelId);
-		if (!MESSAGES.hasNext) return;
+		if (MESSAGES.length < 1) return;
 
 		let requestURL = `channels/${this.currentChannelId}/messages`;
-		requestURL += `/lastMessageId=${MESSAGES.getLast().id}`;
+		requestURL += `/lastMessageId=${MESSAGES.getLast()?.id}`;
 
 		await this.API.get(requestURL).then((/** @type Array */ response) => {
+			if (!response.messages) return;
+
 			MESSAGES.hasNext = response.hasNext;
-			MESSAGES.push(...response.messages);
-			response.messages.forEach((message) => this.messageTemplate.append(message));
+			MESSAGES.frontAll(response.messages);
+
+			this.messageTemplate.clear();
+			this.messageTemplate.prependAll(MESSAGES);
 		});
+
+		CommonDOMevent.scroll.down();
 	}
 
 	receiveMessage(message) {
+		this.#messageMap.get(message.channelId).push(message);
+
 		if (message.channelId == this.currentChannelId) {
-			this.#messageMap.get(this.currentChannelId).push(message);
 			this.messageTemplate.append(message);
+		} else {
+			this.#notifyMessage(message);
 		}
 
 		this.channelTemplate.setLastMessageText(message);
 
-		if (message.channelId != this.currentChannelId) this.#notifyMessage(message);
-		// if (message.userId == User.INFO.id)
-		CommonDOMevent.scroll.down();
+		if (message.userId == User.INFO.id) CommonDOMevent.scroll.down();
 	}
 
 	#notifyMessage(message) {

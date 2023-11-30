@@ -18,6 +18,7 @@ export class ChannelEvent {
 			li.addClass("active");
 
 			let channelId = li.data("id");
+
 			this.#main.activateChannel(channelId);
 		});
 	}

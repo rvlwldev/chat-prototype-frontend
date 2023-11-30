@@ -1,5 +1,8 @@
 export class Renderer {
 	constructor() {
+		if (Notification.permission !== "granted") Notification.requestPermission();
+
+		this.activeNotification = null;
 		try {
 			if (nativeDesktopApp) nativeDesktopApp;
 		} catch (err) {
@@ -27,5 +30,22 @@ export class Renderer {
 
 	notify(title, body) {
 		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.showNotification(title, body);
+		else {
+			if (Notification.permission === "granted") this.showWindowNotification(title, body);
+			else {
+				Notification.requestPermission().then(() => console.log(Notification.permission));
+				this.showWindowNotification(title, body);
+			}
+		}
+	}
+
+	showWindowNotification(title, body) {
+		if (this.activeNotification) this.activeNotification.close();
+
+		this.activeNotification = new Notification(title, { body: body });
+
+		this.activeNotification.onshow = () => {};
+		this.activeNotification.onclick = () => {};
+		this.activeNotification.onclose = () => {};
 	}
 }

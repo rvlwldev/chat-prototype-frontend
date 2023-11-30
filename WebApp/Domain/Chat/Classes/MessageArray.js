@@ -7,8 +7,24 @@ export class MessageArray extends Array {
 		else if (elements) this.push(elements);
 	}
 
-	front(...elements) {
-		for (const element of elements) this.unshift(element);
+	get hasNext() {
+		return this.hasNext;
+	}
+
+	set hasNext(hasNext) {
+		this.hasNext = Boolean.valueOf(hasNext);
+	}
+
+	pushAll(elements) {
+		for (const element of elements) super.push(element);
+	}
+
+	front(element) {
+		super.unshift(element);
+	}
+
+	frontAll(elements) {
+		for (const element of elements.reverse()) super.unshift(element);
 	}
 
 	getFirst() {

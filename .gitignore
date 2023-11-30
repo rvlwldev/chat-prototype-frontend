@@ -4,6 +4,7 @@
 /userData/
 /out/
 
+package-lock.json
 .prettirerrc
 .hintrc
 

@@ -39,7 +39,7 @@ export class MessageTemplate extends MessageEvent {
 	}
 
 	getHTML(message) {
-		let type = message.data.type;
+		let type = message.data?.type;
 
 		const isUserMessage = message.userId == User.INFO.id;
 
@@ -63,7 +63,7 @@ export class MessageTemplate extends MessageEvent {
 		return $(`
 			<div class="message me">
 				<img class="image" src="${message.data.filePath}">
-				<div class="time">1월 1일 오전 04:23</div>
+				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
 			  </div>
 		`);
 	}
