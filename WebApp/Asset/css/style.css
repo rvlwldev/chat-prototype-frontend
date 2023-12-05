@@ -271,6 +271,10 @@ body {
 	text-align: right;
 }
 
+.chat .content .message-content .message .time {
+	text-align: left;
+}
+
 .chat .content .message-form {
 	border-top: 1px solid #ddd;
 	background: #eee;
@@ -352,4 +356,68 @@ body {
 	width: auto;
 	height: auto;
 	cursor: pointer;
+}
+
+/* ===================================================================================== */
+
+.message.me .file {
+	display: flex;
+	align-items: end;
+	justify-content: end;
+	flex-direction: column;
+}
+
+.message .file {
+	display: flex;
+	align-items: start;
+	justify-content: start;
+	flex-direction: column;
+}
+
+.message.me .bubble .file-name {
+	display: inline-block;
+	color: #ffffff;
+	padding: 10px 15px 0px;
+	border-radius: 5px;
+	font-size: 18px;
+	font-weight: bold;
+	visibility: visible;
+}
+
+.message.me .bubble .file-size {
+	display: block;
+	color: #ffffff;
+	padding: 1px 15px;
+	border-radius: 5px;
+	font-size: 12px;
+	font-style: italic;
+	visibility: visible;
+}
+
+.message.me .file-download img {
+	padding: 10px 10px;
+}
+
+.message .file .file-name {
+	display: flex;
+	padding: 0px 0px 5px;
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.message .file .file-size {
+	display: block;
+	padding: 5px 0px 0px;
+	font-size: 12px;
+	font-style: italic;
+}
+
+.message a.file-download {
+	display: flex;
+	align-items: start;
+}
+
+.message a.file-download img {
+	display: inline-block;
+	padding: 5px 0px 5px;
 }
