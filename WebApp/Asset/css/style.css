@@ -358,8 +358,7 @@ body {
 	cursor: pointer;
 }
 
-/* ===================================================================================== */
-
+/* FILE */
 .message.me .file {
 	display: flex;
 	align-items: end;
