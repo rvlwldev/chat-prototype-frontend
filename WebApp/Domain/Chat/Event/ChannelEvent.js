@@ -1,11 +1,5 @@
-import { Chat } from "../Chat.js";
-
-export class ChannelEvent {
-	/** @type Chat*/ #main;
-
-	constructor(main) {
-		this.#main = main;
-	}
+export default class ChannelEvent {
+	constructor() {}
 
 	setChannelClickEvent(HTML) {
 		HTML.find("a").on("click", (/** @type Event */ e) => {
@@ -19,7 +13,7 @@ export class ChannelEvent {
 
 			let channelId = li.data("id");
 
-			this.#main.activateChannel(channelId);
+			window.CHAT.activate(channelId);
 		});
 	}
 }

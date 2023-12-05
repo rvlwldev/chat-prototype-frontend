@@ -1,4 +1,4 @@
-export class APIHandler {
+export default class APIHandler {
 	#URL;
 
 	constructor(url) {

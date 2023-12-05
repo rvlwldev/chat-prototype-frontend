@@ -1,34 +1,34 @@
-export class Renderer {
-	constructor() {
-		if (Notification.permission !== "granted") Notification.requestPermission();
+export default class Renderer {
+	static activeNotification = null;
 
-		this.activeNotification = null;
-		try {
-			if (nativeDesktopApp) nativeDesktopApp;
-		} catch (err) {
-			window.nativeDesktopApp = undefined;
-		}
+	constructor() {}
+
+	static requestPermission() {
+		if (Notification.permission !== "granted")
+			Notification.requestPermission(() => {
+				if (Notification.permission == "granted") Renderer.activeNotification = true;
+				else Renderer.activeNotification = false;
+			});
 	}
 
-	alert(message) {
+	static alert(message) {
 		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.alert(message);
 		else alert(message);
 	}
 
-	registerDynamicContextMenu(groupName, menuName, callback) {
+	static registerDynamicContextMenu(groupName, menuName, callback) {
 		if (typeof nativeDesktopApp != "undefined") {
 			nativeDesktopApp.register.contextMenu(groupName, menuName, callback.name, callback);
 		}
 	}
 
-	async showContextMenu(/** @type MouseEvent */ e, registeredEventName, paramObj) {
-		if (typeof nativeDesktopApp != "undefined") {
-			e.preventDefault();
+	static async showContextMenu(/** @type MouseEvent */ e, registeredEventName, paramObj) {
+		e.preventDefault();
+		if (typeof nativeDesktopApp != "undefined")
 			nativeDesktopApp.trigger.contextMenu(e, registeredEventName, paramObj);
-		}
 	}
 
-	notify(title, body) {
+	static notify(title, body) {
 		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.showNotification(title, body);
 		else {
 			if (Notification.permission === "granted") this.showWindowNotification(title, body);
@@ -39,7 +39,7 @@ export class Renderer {
 		}
 	}
 
-	showWindowNotification(title, body) {
+	static showWindowNotification(title, body) {
 		if (this.activeNotification) this.activeNotification.close();
 
 		this.activeNotification = new Notification(title, { body: body });

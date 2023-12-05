@@ -1,4 +1,4 @@
-export class Stringify extends String {
+export default class Stringify extends String {
 	constructor() {
 		super();
 	}

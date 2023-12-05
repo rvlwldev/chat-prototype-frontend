@@ -1,248 +1,128 @@
-import { MessageArray } from "./Classes/MessageArray.js";
-import { ChatMap } from "./Classes/ChatMap.js";
+import Renderer from "../../_Global/Event/Renderer.js";
+import User from "../User/User.js";
 
-import { MessageTemplate } from "./Template/Message.js";
-import { ChannelTemplate } from "./Template/Channel.js";
+import Channel from "./Channel.js";
+import Message from "./Message.js";
 
-import { APIHandler } from "../../Util/APIHandler.js";
-import { CommonDOMevent } from "../../_Global/Event/DOMevent.js";
+class ChatMap extends Map {
+	constructor(entries) {
+		super(entries);
+	}
 
-import { User } from "../User/User.js";
+	/**
+	 * @param { String } channelId
+	 * @returns { Message }
+	 */
+	getMessage(channelId) {
+		// TODO : 채널 없으면 예외
+		for (const [channel, message] of this) if (channel.id == channelId) return message;
+		return undefined;
+	}
 
-export class Chat {
+	/**
+	 * @param { String } channelId
+	 * @returns { Channel }
+	 */
+	getChannel(channelId) {
+		// TODO : 채널 없으면 예외
+		for (const [channel] of this) if (channel.id == channelId) return channel;
+		return undefined;
+	}
+}
+
+export default class Chat {
 	static NO_CHANNEL_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
 	static NO_USER_PROFILE_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
 
-	/**
-	 * @type { String }
-	 */
-	currentChannelId;
+	static isSDKeventInit = false;
 
-	/**
-	 * @type { ChatMap<ChannelObject, MessageArray.<MessageObject>> }
-	 */
-	#messageMap = new ChatMap();
+	/** @type { Channel } */
+	currentChannel;
 
-	/**
-	 * @type { ChatMap<ChannelObject, MessageArray.<MemberObject>> }
-	 */
-	#memberMap = new ChatMap();
+	/** @type { Message }*/
+	currentMessage;
 
-	constructor(userinfo, CLIENT, API) {
-		window.Chat = this;
+	/** @type { ChatMap } */
+	chatMap = new ChatMap();
 
-		this.userinfo = userinfo;
-		this.CLIENT = CLIENT;
+	constructor() {
+		if (!Chat.isSDKeventInit) {
+			window.CHAT = this;
 
-		/** @type APIHandler */
-		this.API = API;
+			this.#initializeSDKeventListner();
+			this.#initChannels();
 
-		this.messageTemplate = new MessageTemplate(this);
-		this.channelTemplate = new ChannelTemplate(this);
-
-		this.#initialize();
-	}
-
-	async #initialize() {
-		let connect = await this.API.get("")
-			.then(async (res) => res.connect)
-			.catch((err) => {
-				console.error(err);
-				return false;
-			});
-
-		if (!connect) {
-			console.error("채팅 서버에 연결 할 수 없습니다.");
-			return false;
+			Chat.isSDKeventInit = true;
 		}
-
-		await this.#initializeUserChannels();
 	}
 
-	async #initializeUserChannels() {
-		await this.API.get("channels?userId=" + User.INFO.id).then((channels) => {
-			this.channelTemplate.clear();
-			this.messageTemplate.clear();
-
-			channels.forEach((channel) => this.addChannel(channel));
+	async #initializeSDKeventListner() {
+		await User.TALKPLUS_CLIENT.on("event", (event) => {
+			if (event.type === "message") this.receiveMessage(event.message);
+			else if (event.type === "channelAdded") this.receiveChannel(event.channel);
+			else if (event.type === "channelRemoved") {
+				console.log("one of my channels was removed");
+			} else if (event.type === "memberAdded") {
+				console.log("new channel member");
+			} else if (event.type === "memberLeft") {
+				console.log("channel member left");
+			}
 		});
 	}
 
-	async joinChannel(channelId) {
-		await this.API.post(`channels/${channelId}/members/add`, {
-			members: [this.userinfo.id],
-		}).then((res) => this.addChannel(channelId));
-	}
-
-	addChannel(channel) {
-		this.#messageMap.set(channel, new MessageArray());
-		this.#memberMap.set(channel, new MessageArray());
-
-		this.channelTemplate.prepend(channel);
-	}
-
-	hasChannel(channelId) {
-		return this.#memberMap.hasId(channelId);
-	}
-
-	/*
-		메세지배열 : 인덱스 숫자가 낮을 수록 최근
-		더 불러오면 뒤에 붙이기
-		새로운 메세지는 앞에 붙이기
-	*/
-	// TODO : 비동기 버그 찾기
-	// TODO : 다이나믹 로딩
-	activateChannel(channelId) {
-		this.currentChannelId = channelId;
-		const MESSAGES = this.#messageMap.get(this.currentChannelId);
-		if (MESSAGES.length < 1) this.loadNewMessages();
-		else this.loadMoreMessages();
-	}
-
-	async leaveChannel(channelId) {}
-
-	async loadNewMessages() {
-		/** @type MessageArray */
-		const MESSAGES = this.#messageMap.get(this.currentChannelId);
-
-		let requestURL = `channels/${this.currentChannelId}/messages`;
-		await this.API.get(requestURL).then((/** @type Array */ response) => {
-			if (!response.messages) return;
-
-			MESSAGES.hasNext = response.hasNext;
-			MESSAGES.pushAll(response.messages);
-
-			this.messageTemplate.clear();
-			this.messageTemplate.prependAll(MESSAGES);
+	async #initChannels() {
+		await User.CHAT_API.get(`channels/${User.INFO.id}`).then((channels) => {
+			channels.forEach((channel) => {
+				this.chatMap.set(new Channel(channel), new Message(channel.id));
+			});
 		});
-
-		CommonDOMevent.scroll.down();
 	}
 
-	async loadMoreMessages() {
-		/** @type MessageArray */
-		const MESSAGES = this.#messageMap.get(this.currentChannelId);
-		if (MESSAGES.length < 1) return;
+	// TODO : 예외 처리
+	activate(channelId) {
+		this.currentChannel = this.chatMap.getChannel(channelId);
+		this.currentChannel.showName();
 
-		let requestURL = `channels/${this.currentChannelId}/messages`;
-		requestURL += `/lastMessageId=${MESSAGES.getLast()?.id}`;
-
-		await this.API.get(requestURL).then((/** @type Array */ response) => {
-			if (!response.messages) return;
-
-			MESSAGES.hasNext = response.hasNext;
-			MESSAGES.frontAll(response.messages);
-
-			this.messageTemplate.clear();
-			this.messageTemplate.prependAll(MESSAGES);
-		});
-
-		CommonDOMevent.scroll.down();
+		this.currentMessage = this.chatMap.getMessage(channelId);
+		this.currentMessage.load();
 	}
 
-	receiveMessage(message) {
-		this.#messageMap.get(message.channelId).push(message);
+	receiveChannel(channelObj) {
+		this.chatMap.set(new Channel(channelObj), new Message(channelObj.id));
+	}
 
-		if (message.channelId == this.currentChannelId) {
-			this.messageTemplate.append(message);
-		} else {
-			this.#notifyMessage(message);
+	sendMessage(obj) {
+		/** @type { Message }*/
+		const message = this.chatMap.getMessage(this.currentChannel.id);
+
+		if (typeof obj == "string") message.sendText(obj);
+		else if (obj instanceof File) {
+			if (obj.type.includes("image")) {
+				console.log("image message send");
+				message.sendImage(obj);
+			} else if (obj.type.includes("video")) {
+				console.log("video message send");
+				message.sendVideo(obj);
+			} else {
+				console.log("file message send");
+				message.sendFile(obj);
+			}
 		}
-
-		this.channelTemplate.setLastMessageText(message);
-
-		if (message.userId == User.INFO.id) CommonDOMevent.scroll.down();
 	}
 
-	#notifyMessage(message) {
-		let body;
-		let type = message.data.type;
-
-		switch (type) {
-			case "text":
-				body = message.text;
-				break;
-			case "file":
-				body = "[파일]";
-				break;
-			case "image":
-				body = "[이미지]";
-				break;
-			case "video":
-				body = "[동영상]";
-				break;
+	receiveMessage(messageObj) {
+		if (messageObj.channelId == this.currentChannel) currentMessage.receive(messageObj);
+		else {
+			this.chatMap.getMessage(messageObj.channelId).receive(messageObj);
+			// this.notify(messageObj);
 		}
-
-		if (type) this.messageTemplate.notify(message.username, body);
 	}
 
-	sendTextMessasge(messageText) {
-		let body = {
-			senderId: User.INFO.id,
-			text: messageText,
-		};
+	// TODO : noti 알람
+	notify(messageObj) {
+		let title = messageObj.channelId;
+		let body = messageObj.senderId + " : " + messageObj.text;
 
-		this.API.post("channels/" + this.currentChannelId + "/messages", body).catch((err) => {
-			console.log(err);
-		});
-	}
-
-	async sendImageMessage(file) {
-		let body = {
-			senderId: User.INFO.id,
-			type: file.type.split("/")[0],
-			file: file,
-			fileName: file.name,
-			fileSize: file.size,
-		};
-
-		await this.API.postForm("channels/" + this.currentChannelId + "/messages", body)
-			.then((res) => {
-				console.log(res);
-				return res;
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-
-		console.log("sendImageMessage");
-	}
-
-	async sendVideoMessage(file) {
-		let body = {
-			senderId: User.INFO.id,
-			type: file.type.split("/")[0],
-			file: file,
-			fileName: file.name,
-			fileSize: file.size,
-		};
-
-		await this.API.postForm("channels/" + this.currentChannelId + "/messages", body)
-			.then((res) => {
-				console.log(res);
-				return res;
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	}
-
-	async sendFileMessage(file) {
-		let body = {
-			senderId: User.INFO.id,
-			type: "file",
-			file: file,
-			fileName: file.name,
-			fileSize: file.size,
-		};
-
-		await this.API.postForm("channels/" + this.currentChannelId + "/messages", body)
-			.then((res) => {
-				console.log(res);
-				return res;
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		Renderer.notify(title, body);
 	}
 }

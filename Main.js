@@ -58,13 +58,32 @@ function initIpcRenderer() {
 }
 
 function initCallbackEmitter() {
+	let activeNotifications = [];
+
 	ipcMain.on("show-notification", (event, args) => {
 		const { title, body } = args;
 
-		const notification = new Notification({ title, body });
-		notification.show();
+		activeNotifications.forEach(({ notification, timer }) => {
+			notification.close();
+			clearInterval(timer);
+		});
+		activeNotifications = [];
 
-		setTimeout(() => notification.close(), 3000);
+		const newNotification = new Notification({ title, body });
+		newNotification.show();
+
+		// TODO : 클릭 시 메인 앱의 채널 접속 함수 호출
+		// newNotification.on("click", (e) => {})
+
+		const newTimer = setTimeout(() => {
+			newNotification.close();
+
+			activeNotifications = activeNotifications.filter(
+				({ notification }) => notification !== newNotification
+			);
+		}, 5000);
+
+		activeNotifications.push({ notification: newNotification, timer: newTimer });
 	});
 
 	ipcMain.on(

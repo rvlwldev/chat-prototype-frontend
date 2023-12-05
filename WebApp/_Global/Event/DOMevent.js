@@ -1,4 +1,4 @@
-export class CommonDOMevent {
+export default class CommonDOMevent {
 	constructor() {}
 
 	static initializeDefaultDOMeventListner() {
@@ -103,14 +103,14 @@ export class CommonDOMevent {
 
 		isScrollingUp: false,
 
-		setEvent: function (callback) {
+		setEvent: function () {
 			const event = async (e) => {
 				const currentScrollTop = $("#messageList").scrollTop();
 
 				if (currentScrollTop === 0) {
 					if (!CommonDOMevent.scroll.isScrollingUp) {
 						CommonDOMevent.scroll.isScrollingUp = true;
-						callback.bind(this)();
+						this.currentMessage.loadMore();
 					}
 				} else CommonDOMevent.scroll.isScrollingUp = false;
 			};

@@ -1,37 +1,40 @@
-import { MessageEvent } from "../Event/Message.js";
-import { User } from "../../User/User.js";
-import { Stringify } from "../../../Util/Stringify.js";
-import { Chat } from "../Chat.js";
+import Stringify from "../../../Util/Stringify.js";
+import CommonDOMevent from "../../../_Global/Event/DOMevent.js";
+import User from "../../User/User.js";
+import Chat from "../Chat.js";
+import MessageEvent from "../Event/MessageEvent.js";
 
-export class MessageTemplate extends MessageEvent {
-	constructor(_self) {
-		super(_self);
+export default class MessageTemplate extends MessageEvent {
+	constructor() {
+		super();
 	}
 
-	// TODO : event
 	append(message) {
 		const HTML = this.getHTML(message);
 		this.onUserImageClickEvent(HTML);
 		this.onUserImageContextMenuEvent(HTML);
 
 		$("#messageList").append(HTML);
+
+		if (message.userId === User.INFO.id) CommonDOMevent.scroll.down();
 	}
 
-	// TODO : event
-	prepend(message) {
+	appendAll(messageArray) {
+		messageArray.forEach((message) => this.append(message, false));
+	}
+
+	prepend(message, scrollDown = true) {
 		const HTML = this.getHTML(message);
 		this.onUserImageClickEvent(HTML);
 		this.onUserImageContextMenuEvent(HTML);
 
 		$("#messageList").prepend(HTML);
+
+		if (scrollDown) CommonDOMevent.scroll.down();
 	}
 
-	prependAll(messages) {
-		messages.forEach((message) => this.prepend(message));
-	}
-
-	appendAll(messages) {
-		messages.forEach((message) => this.append(message));
+	prependAll(messageArray) {
+		messageArray.forEach((message) => this.prepend(message));
 	}
 
 	clear() {
@@ -39,7 +42,7 @@ export class MessageTemplate extends MessageEvent {
 	}
 
 	getHTML(message) {
-		let type = message.data?.type;
+		let type = message.type;
 
 		const isUserMessage = message.userId == User.INFO.id;
 
@@ -52,43 +55,40 @@ export class MessageTemplate extends MessageEvent {
 				return isUserMessage ? this.toMyImageHTML(message) : this.toImageHTML(message);
 			case "video":
 				return isUserMessage ? this.toMyVideoHTML(message) : this.toVideoHTML(message);
-			default:
-				// console.log("올바르지 않은 메세지 : " + message.text);
-				// console.log(message);
-				return isUserMessage ? this.toMyTextHTML(message) : this.toTextHTML(message);
 		}
+
+		throw new Error("올바르지 않은 메세지");
 	}
 
 	toMyImageHTML(message) {
 		return $(`
 			<div class="message me">
-				<img class="image" src="${message.data.filePath}">
+				<img class="image" src="${message.filePath}">
 				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
 			  </div>
 		`);
 	}
 	toMyVideoHTML(message) {
-		let extension = Stringify.getExtension(message.data.filePath);
+		let extension = Stringify.getExtension(message.filePath);
 
 		return $(`
 			<div class="message me">
 				<div class="bubble" data-userId="${message.userId}" data-messageId="${message.id}">
 					<video class="video" controls>
-						<source src="${message.data.filePath}" type="video/${extension}">
+						<source src="${message.filePath}" type="video/${extension}">
 					</video>
 				</div>
 				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
 			</div>
 		`);
 	}
-
 	toMyFileHTML(message) {
 		return $(`
 			<div class="message me">
 				<div class="file-info">
-					<div class="file-name">${message.data.fileName}</div>
-					<div class="file-size">용량: ${Stringify.formatBytes(message.data.fileSize)}</div>
-					<a class="download-link" href="${message.data.filePath}" target="_blank" download>
+					<div class="file-name">${message.fileName}</div>
+					<div class="file-size">용량: ${Stringify.formatBytes(message.fileSize)}</div>
+					<a class="download-link" href="${message.filePath}" target="_blank" download>
 						Download
 					</a>
 				</div>
@@ -96,7 +96,6 @@ export class MessageTemplate extends MessageEvent {
 			</div>
 		`);
 	}
-
 	toMyTextHTML(message) {
 		return $(`
 			<div class="message me">
@@ -109,26 +108,21 @@ export class MessageTemplate extends MessageEvent {
 	}
 
 	toImageHTML(message) {
-		let userImage = message.profileImageUrl
-			? message.profileImageUrl
-			: Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
 
 		return $(`
 			<div class="message">
 				<img class="user-image" src="${userImage}">
 				<div class="name">${message.username}</div>
-				<img class="image" src="${message.data.filePath}">
+				<img class="image" src="${message.filePath}">
 				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
 			</div>
 		`);
 	}
-
 	toVideoHTML(message) {
-		let userImage = message.profileImageUrl
-			? message.profileImageUrl
-			: Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
 
-		let extension = Stringify.getExtension(message.data.filePath);
+		let extension = Stringify.getExtension(message.filePath);
 
 		return $(`
 			<div class="message">
@@ -136,18 +130,15 @@ export class MessageTemplate extends MessageEvent {
 				<div class="name">${message.username}</div>
 				<div class="bubble" data-userId="${message.userId}" data-messageId="${message.id}">
 					<video class="video" controls>
-						<source src="${message.data.filePath}" type="video/${extension}">
+						<source src="${message.filePath}" type="video/${extension}">
 					</video>
 				</div>
 				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
 			</div>
 		`);
 	}
-
 	toFileHTML(message) {
-		let userImage = message.profileImageUrl
-			? message.profileImageUrl
-			: Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
 
 		return $(`
 			<div class="message">
@@ -155,9 +146,9 @@ export class MessageTemplate extends MessageEvent {
 				<div class="name">${message.username}</div>
 				
 				<div class="file-info">
-					<div class="file-name">${message.data.fileName}</div>
-					<div class="file-size">용량: ${Stringify.formatBytes(message.data.fileSize)}</div>
-					<a class="download-link" href="${message.data.filePath}" target="_blank" download>
+					<div class="file-name">${message.fileName}</div>
+					<div class="file-size">용량: ${Stringify.formatBytes(message.fileSize)}</div>
+					<a class="download-link" href="${message.filePath}" target="_blank" download>
 						Download
 					</a>
 				</div>
@@ -166,11 +157,8 @@ export class MessageTemplate extends MessageEvent {
 			</div>
 		`);
 	}
-
 	toTextHTML(message) {
-		let userImage = message.profileImageUrl
-			? message.profileImageUrl
-			: Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
 
 		return $(`
 			<div class="message">
