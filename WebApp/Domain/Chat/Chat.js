@@ -31,8 +31,11 @@ class ChatMap extends Map {
 }
 
 export default class Chat {
-	static NO_CHANNEL_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
-	static NO_USER_PROFILE_IMAGE = "http://192.168.2.65:3000/asset/img/no_picture_user.png";
+	static NO_CHANNEL_IMAGE = "../../Asset/img/no_picture_user.png";
+	static NO_USER_PROFILE_IMAGE = "../../Asset/img/no_picture_user.png";
+
+	static DOWNLOAD_BUTTON_WHITE_IMAGE = "../../Asset/img/download_white.png";
+	static DOWNLOAD_BUTTON_BLACK_IMAGE = "../../Asset/img/download_black.png";
 
 	static isSDKeventInit = false;
 
@@ -98,13 +101,10 @@ export default class Chat {
 		if (typeof obj == "string") message.sendText(obj);
 		else if (obj instanceof File) {
 			if (obj.type.includes("image")) {
-				console.log("image message send");
 				message.sendImage(obj);
 			} else if (obj.type.includes("video")) {
-				console.log("video message send");
 				message.sendVideo(obj);
 			} else {
-				console.log("file message send");
 				message.sendFile(obj);
 			}
 		}
