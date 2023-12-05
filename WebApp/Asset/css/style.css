@@ -399,14 +399,12 @@ body {
 
 .message .file .file-name {
 	display: flex;
-	padding: 0px 0px 5px;
 	font-weight: bold;
 	font-size: 18px;
 }
 
 .message .file .file-size {
 	display: block;
-	padding: 5px 0px 0px;
 	font-size: 12px;
 	font-style: italic;
 }
