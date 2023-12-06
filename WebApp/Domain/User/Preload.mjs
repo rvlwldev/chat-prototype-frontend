@@ -30,8 +30,15 @@ export default class Preloader {
 }
 
 async function initStaticUserInfo() {
-	User.INFO = JSON.parse(sessionStorage.getItem("userinfo"));
-	if (!User.INFO) throw new AuthenticationError();
+	// TODO : CI의 세션 값을 활용한 방법으로 로그인/유저유효성 검사 변경 필요
+	User.INFO = JSON.parse(sessionStorage.getItem("userinfo")); // 임시
+
+	if (!User.INFO) {
+		let cookieValue = JSON.parse(decodeURIComponent(document.cookie.split("=")[1]));
+
+		if (cookieValue.id && cookieValue.name) User.INFO = cookieValue;
+		else throw new AuthenticationError();
+	}
 
 	await User.CHAT_API.post("users/login", { userId: User.INFO.id }).catch((err) => {
 		console.error(err);
