@@ -3,15 +3,16 @@ import MessageTemplate from "./Template/MessageTemplate.js";
 
 class MessageArray extends Array {
 	constructor(elements) {
-		super(elements);
+		if (Array.isArray(elements)) super(...elements);
+		else super(elements);
 	}
 
 	getLatest() {
-		return this[this.length - 1];
+		return this[0];
 	}
 
 	getOldest() {
-		return this[0];
+		return this[this.length - 1];
 	}
 }
 
@@ -43,25 +44,33 @@ export default class Message extends MessageTemplate {
 
 	async load() {
 		super.clear();
+
 		let requestURL = `channels/${this.#channelId}/messages`;
 		await User.CHAT_API.get(requestURL).then((data) => {
-			this.array = this.array.concat(data.messages);
+			this.array = new MessageArray(data.messages);
 			super.prependAll(data.messages);
 			this.hasHistory = data.hasHistory;
 		});
 	}
 
 	async loadMore() {
+		let oldestMessageObj = this.array.getOldest();
+
 		if (!this.hasHistory) return false;
-		else if (!this.array.getOldest()) return false;
+		else if (!oldestMessageObj) return false;
 
 		let requestURL = `channels/${this.#channelId}/messages`;
-		requestURL += `?lastMessageId=${this.array.getOldest()}`;
+		requestURL += `?lastMessageId=${oldestMessageObj.id}`;
 
 		User.CHAT_API.get(requestURL).then((data) => {
-			this.array = this.array.concat(data.messages);
-			super.appendAll(data.messages);
+			// console.log(data);
+			this.array.push(...data.messages);
+			super.prependAll(data.messages, true);
 			this.hasHistory = data.hasHistory;
+
+			// console.log($("#messageList").outerHeight());
+			// console.log($("#messageList").height());
+			// console.log($("#messageList").prop("scrollHeight"));
 		});
 	}
 

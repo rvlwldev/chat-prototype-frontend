@@ -36,6 +36,6 @@ export default class User {
 		CommonDOMevent.setFileSendCallback.bind(this.CHAT)(this.CHAT.sendMessage);
 
 		// 사용자 스크롤 이벤트
-		CommonDOMevent.scroll.setEvent.bind(this.CHAT)();
+		CommonDOMevent.messageScroll.setEvent.bind(this.CHAT)();
 	}
 }

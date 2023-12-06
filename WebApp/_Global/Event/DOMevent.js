@@ -70,7 +70,7 @@ export default class CommonDOMevent {
 		});
 	}
 
-	static scroll = {
+	static messageScroll = {
 		height: 0,
 
 		down: () => {
@@ -78,27 +78,13 @@ export default class CommonDOMevent {
 			target.scrollTop(target.prop("scrollHeight"));
 		},
 
-		saveLocation: () => {
-			let height = 0;
+		saveLocation: () =>
+			(CommonDOMevent.messageScroll.height = $("#messageList").prop("scrollHeight")),
 
-			$("#messageList")
-				.children()
-				.each((i, child) => {
-					height += $(child).height();
-				});
-
-			CommonDOMevent.scroll.height = height;
-		},
 		restoreLocation: () => {
-			let currentHeight = 0;
-
-			$("#messageList")
-				.children()
-				.each((i, child) => {
-					currentHeight += $(child).height();
-				});
-
-			$("#messageList").scrollTop(currentHeight - CommonDOMevent.scroll.height);
+			$("#messageList").scrollTop(
+				$("#messageList").prop("scrollHeight") - CommonDOMevent.messageScroll.height
+			);
 		},
 
 		isScrollingUp: false,
@@ -108,11 +94,11 @@ export default class CommonDOMevent {
 				const currentScrollTop = $("#messageList").scrollTop();
 
 				if (currentScrollTop === 0) {
-					if (!CommonDOMevent.scroll.isScrollingUp) {
-						CommonDOMevent.scroll.isScrollingUp = true;
+					if (!CommonDOMevent.messageScroll.isScrollingUp) {
+						CommonDOMevent.messageScroll.isScrollingUp = true;
 						this.currentMessage.loadMore();
 					}
-				} else CommonDOMevent.scroll.isScrollingUp = false;
+				} else CommonDOMevent.messageScroll.isScrollingUp = false;
 			};
 
 			$("#messageList").on("scroll", async (e) => await event(e));

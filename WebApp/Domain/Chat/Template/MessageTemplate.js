@@ -15,26 +15,30 @@ export default class MessageTemplate extends MessageEvent {
 		this.onUserImageContextMenuEvent(HTML);
 
 		$("#messageList").append(HTML);
-
-		if (message.userId === User.INFO.id) CommonDOMevent.scroll.down();
 	}
 
 	appendAll(messageArray) {
-		messageArray.forEach((message) => this.append(message, false));
+		messageArray.forEach((message) => this.append(message));
 	}
 
-	prepend(message, scrollDown = true) {
+	prepend(message) {
 		const HTML = this.getHTML(message);
 		this.onUserImageClickEvent(HTML);
 		this.onUserImageContextMenuEvent(HTML);
 
 		$("#messageList").prepend(HTML);
-
-		if (scrollDown) CommonDOMevent.scroll.down();
 	}
 
-	prependAll(messageArray) {
+	prependAll(messageArray, scrollSave = false) {
+		if (scrollSave) CommonDOMevent.messageScroll.saveLocation();
+
 		messageArray.forEach((message) => this.prepend(message));
+
+		if (scrollSave) {
+			CommonDOMevent.messageScroll.restoreLocation();
+		} else {
+			CommonDOMevent.messageScroll.down();
+		}
 	}
 
 	clear() {
