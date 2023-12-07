@@ -1,10 +1,12 @@
+import CommonDOMevent from "../../_Global/Event/DOMevent.js";
 import User from "../User/User.js";
 import MessageTemplate from "./Template/MessageTemplate.js";
 
 class MessageArray extends Array {
 	constructor(elements) {
 		if (Array.isArray(elements)) super(...elements);
-		else super(elements);
+		else if (elements) super(elements);
+		else super();
 	}
 
 	getLatest() {
@@ -36,9 +38,11 @@ export default class Message extends MessageTemplate {
 		if (!messageId) throw new Error("잘못된 메세지 수신");
 
 		let requestURL = `channels/${this.#channelId}/messages/${messageId}`;
+
 		await User.CHAT_API.get(requestURL).then((data) => {
 			super.append(data.message);
 			this.array.push(data.message);
+			CommonDOMevent.messageScroll.down();
 		});
 	}
 
@@ -46,8 +50,12 @@ export default class Message extends MessageTemplate {
 		super.clear();
 
 		let requestURL = `channels/${this.#channelId}/messages`;
+
+		if (this.array.length > 0)
+			requestURL += `?lastMessageId=${this.array.getLatest().id}&order=latest`;
+
 		await User.CHAT_API.get(requestURL).then((data) => {
-			this.array = new MessageArray(data.messages);
+			this.array.unshift(data.messages);
 			super.prependAll(data.messages);
 			this.hasHistory = data.hasHistory;
 		});
@@ -56,33 +64,40 @@ export default class Message extends MessageTemplate {
 	async loadMore() {
 		let oldestMessageObj = this.array.getOldest();
 
-		if (!this.hasHistory) return false;
-		else if (!oldestMessageObj) return false;
+		if (!this.hasHistory || !oldestMessageObj) return false;
 
 		let requestURL = `channels/${this.#channelId}/messages`;
 		requestURL += `?lastMessageId=${oldestMessageObj.id}`;
 
-		User.CHAT_API.get(requestURL).then((data) => {
-			// console.log(data);
+		await User.CHAT_API.get(requestURL).then((data) => {
 			this.array.push(...data.messages);
 			super.prependAll(data.messages, true);
 			this.hasHistory = data.hasHistory;
-
-			// console.log($("#messageList").outerHeight());
-			// console.log($("#messageList").height());
-			// console.log($("#messageList").prop("scrollHeight"));
 		});
 	}
 
-	sendText(text) {
+	async loadReceivedMessage(messageObj) {
+		let requestURL = `channels/${this.#channelId}/messages/${messageObj.id}`;
+		const message = await User.CHAT_API.get(requestURL).then((data) => data.message);
+
+		this.array.push(message);
+
+		if (message.userId != User.INFO.id) super.append(message, true);
+	}
+
+	async sendText(text) {
 		let requestURL = `channels/${this.#channelId}/messages`;
 		let body = { senderId: User.INFO.id, text: text };
 
 		// TODO : 예외 처리
-		User.CHAT_API.post(requestURL, body).catch((err) => console.log(err));
+		await User.CHAT_API.post(requestURL, body)
+			.then((res) => super.append(res, true))
+			.catch((err) => console.log(err));
 	}
 
-	sendFile(file) {
+	async sendFile(file) {
+		let requestURL = `channels/${this.#channelId}/messages`;
+
 		let body = {
 			senderId: User.INFO.id,
 			type: "file",
@@ -91,12 +106,16 @@ export default class Message extends MessageTemplate {
 			fileSize: file.size,
 		};
 
-		User.CHAT_API.postForm("channels/" + this.#channelId + "/messages", body)
+		let sendMessage = await User.CHAT_API.postForm(requestURL, body)
 			.then((res) => res)
 			.catch((err) => console.log(err));
+
+		super.append(sendMessage, true);
 	}
 
-	sendImage(file) {
+	async sendImage(file) {
+		let requestURL = `channels/${this.#channelId}/messages`;
+
 		let body = {
 			senderId: User.INFO.id,
 			type: file.type.split("/")[0],
@@ -105,15 +124,16 @@ export default class Message extends MessageTemplate {
 			fileSize: file.size,
 		};
 
-		User.CHAT_API.postForm("channels/" + this.#channelId + "/messages", body)
-			.then((res) => {
-				console.log(res);
-				res;
-			})
+		let sendMessage = await User.CHAT_API.postForm(requestURL, body)
+			.then((res) => res)
 			.catch((err) => console.log(err));
+
+		super.append(sendMessage, true);
 	}
 
-	sendVideo(file) {
+	async sendVideo(file) {
+		let requestURL = `channels/${this.#channelId}/messages`;
+
 		let body = {
 			senderId: User.INFO.id,
 			type: file.type.split("/")[0],
@@ -122,8 +142,10 @@ export default class Message extends MessageTemplate {
 			fileSize: file.size,
 		};
 
-		User.CHAT_API.postForm("channels/" + this.#channelId + "/messages", body)
+		let sendMessage = await User.CHAT_API.postForm(requestURL, body)
 			.then((res) => res)
 			.catch((err) => console.log(err));
+
+		super.append(sendMessage, true);
 	}
 }

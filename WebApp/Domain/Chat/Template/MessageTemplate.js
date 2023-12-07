@@ -9,12 +9,14 @@ export default class MessageTemplate extends MessageEvent {
 		super();
 	}
 
-	append(message) {
+	append(message, scrollDown = false) {
 		const HTML = this.getHTML(message);
 		this.onUserImageClickEvent(HTML);
 		this.onUserImageContextMenuEvent(HTML);
 
 		$("#messageList").append(HTML);
+
+		if (scrollDown) CommonDOMevent.messageScroll.down();
 	}
 
 	appendAll(messageArray) {
@@ -34,11 +36,8 @@ export default class MessageTemplate extends MessageEvent {
 
 		messageArray.forEach((message) => this.prepend(message));
 
-		if (scrollSave) {
-			CommonDOMevent.messageScroll.restoreLocation();
-		} else {
-			CommonDOMevent.messageScroll.down();
-		}
+		if (scrollSave) CommonDOMevent.messageScroll.restoreLocation();
+		else CommonDOMevent.messageScroll.down();
 	}
 
 	clear() {
@@ -79,7 +78,7 @@ export default class MessageTemplate extends MessageEvent {
 					<div class="file-name">${message.fileName}</div>
 					<div class="file-size">용량: ${Stringify.formatBytes(message.fileSize)}</div>
 					<a class="file-download" href="${message.filePath}" target="_blank" download>
-						<img src="${Chat.DOWNLOAD_BUTTON_WHITE_IMAGE}">
+						<img src="${Chat.DOWNLOAD_BUTTON_WHITE_IMAGE_URL}">
 					</a>
 				</div>
 				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
@@ -108,7 +107,7 @@ export default class MessageTemplate extends MessageEvent {
 	}
 
 	toTextHTML(message) {
-		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE_URL;
 
 		return $(`
 			<div class="message"  data-userId="${message.userId}" data-messageId="${message.id}">
@@ -120,7 +119,7 @@ export default class MessageTemplate extends MessageEvent {
 		`);
 	}
 	toFileHTML(message) {
-		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE_URL;
 
 		return $(`
 			<div class="message">
@@ -131,7 +130,7 @@ export default class MessageTemplate extends MessageEvent {
 						<div class="file-name">${message.fileName}</div>
 						<div class="file-size">용량: ${Stringify.formatBytes(message.fileSize)}</div>
 						<a class="file-download" href="${message.filePath}" target="_blank" download>
-							<img src="${Chat.DOWNLOAD_BUTTON_BLACK_IMAGE}">
+							<img src="${Chat.DOWNLOAD_BUTTON_BLACK_IMAGE_URL}">
 						</a>
 					</div>
 				</div>
@@ -140,7 +139,7 @@ export default class MessageTemplate extends MessageEvent {
 		`);
 	}
 	toImageHTML(message) {
-		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE_URL;
 
 		return $(`
 			<div class="message" data-userId="${message.userId}" data-messageId="${message.id}">
@@ -152,7 +151,7 @@ export default class MessageTemplate extends MessageEvent {
 		`);
 	}
 	toVideoHTML(message) {
-		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE;
+		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE_URL;
 		let extension = Stringify.getExtension(message.filePath);
 
 		return $(`

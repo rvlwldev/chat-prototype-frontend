@@ -1,3 +1,4 @@
+import Chat from "../Chat.js";
 import ChannelEvent from "../Event/ChannelEvent.js";
 
 export default class ChannelTemplate extends ChannelEvent {
@@ -19,11 +20,27 @@ export default class ChannelTemplate extends ChannelEvent {
 		$(".message-header").find("#channelTitle").text(name);
 	}
 
+	getCurrentUnreadcount(channelId) {
+		return $("li[data-id='" + channelId + "'] a")
+			.find(".unread-count")
+			.text();
+	}
+
+	setUnreadcount(channelId, count) {
+		let counter = $(`<div class="unread-count">${count}</div>`);
+
+		$("li[data-id='" + channelId + "'] a")
+			.find(".unread-count")
+			.remove();
+
+		$("li[data-id='" + channelId + "'] a").append(counter);
+	}
+
 	getHTML(channel) {
 		return $(`
 			<li data-id="${channel.id}">
 				<a href="">
-				<img src="${"http://192.168.2.65:3000/asset/img/no_picture_user.png"}"> 
+				<img src="${Chat.NO_CHANNEL_IMAGE_URL}"> 
 				<div class="contact">
 					<div class="name" data-time="${channel.updatedAt}">${channel.name}</div>
 				</div>

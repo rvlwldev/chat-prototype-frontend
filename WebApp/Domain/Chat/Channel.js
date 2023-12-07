@@ -18,11 +18,21 @@ export default class Channel extends ChannelTemplate {
 	}
 
 	async #getInitChannelInfo(channelId) {
-		console.log(`channels/${channelId}`);
-
 		return await User.CHAT_API.get(`channels/${channelId}/info`).then((res) =>
 			this.append(res)
 		);
+	}
+
+	increaseUnreadCount() {
+		let currentCount = this.getCurrentUnreadcount(this.id);
+
+		if (!currentCount) this.setUnreadcount(this.id, 1);
+		else {
+			let count = parseInt(currentCount.replace(/[^0-9]/g, "")) || 0;
+			count++;
+
+			this.setUnreadcount(this.id, count);
+		}
 	}
 
 	showName() {

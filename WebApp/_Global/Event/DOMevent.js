@@ -96,7 +96,7 @@ export default class CommonDOMevent {
 				if (currentScrollTop === 0) {
 					if (!CommonDOMevent.messageScroll.isScrollingUp) {
 						CommonDOMevent.messageScroll.isScrollingUp = true;
-						this.currentMessage.loadMore();
+						await this.currentMessage.loadMore();
 					}
 				} else CommonDOMevent.messageScroll.isScrollingUp = false;
 			};

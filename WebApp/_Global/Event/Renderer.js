@@ -24,10 +24,10 @@ export default class Renderer {
 		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.showNotification(title, body);
 		else {
 			if (Notification.permission === "granted") this.showWindowNotification(title, body);
-			else {
-				Notification.requestPermission().then(() => console.log(Notification.permission));
-				Renderer.showWindowNotification(title, body);
-			}
+			else
+				Notification.requestPermission().then(() => {
+					Renderer.showWindowNotification(title, body);
+				});
 		}
 	}
 
