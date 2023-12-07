@@ -40,7 +40,8 @@ async function initStaticUserInfo() {
 		else throw new AuthenticationError();
 	}
 
-	await User.CHAT_API.post("users/login", { userId: User.INFO.id }).catch((err) => {
+	let body = { userId: User.INFO.id, username: User.INFO.name };
+	await User.CHAT_API.post("users/login", body).catch((err) => {
 		console.error(err);
 		throw new AuthenticationError("로그인 정보 검증 실패");
 	});

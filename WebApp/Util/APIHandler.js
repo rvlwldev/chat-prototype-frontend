@@ -2,8 +2,9 @@ export default class APIHandler {
 	#URL;
 
 	constructor(url) {
-		if (url) this.#URL = url;
-		else this.#URL = "http://192.168.2.65/chatapi/"; // CI_API
+		if (!url) throw new Error("APIHandler needs API URL on constructor");
+
+		this.#URL = url;
 	}
 
 	#formRequest(url, body, method = "POST") {
@@ -26,8 +27,6 @@ export default class APIHandler {
 	}
 
 	#request(url, body = {}, method) {
-		// console.log("(" + method + ") " + this.#URL + url);
-
 		return $.ajax({
 			method: method,
 			url: this.#URL + url,

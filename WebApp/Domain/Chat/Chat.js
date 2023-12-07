@@ -5,8 +5,8 @@ import Channel from "./Channel.js";
 import Message from "./Message.js";
 
 class ChatMap extends Map {
-	constructor(entries) {
-		super(entries);
+	constructor() {
+		super();
 	}
 
 	/**
@@ -31,13 +31,12 @@ class ChatMap extends Map {
 }
 
 export default class Chat {
-	static NO_CHANNEL_IMAGE = "../../Asset/img/no_picture_user.png";
-	static NO_USER_PROFILE_IMAGE = "../../Asset/img/no_picture_user.png";
-
-	static DOWNLOAD_BUTTON_WHITE_IMAGE = "../../Asset/img/download_white.png";
-	static DOWNLOAD_BUTTON_BLACK_IMAGE = "../../Asset/img/download_black.png";
-
 	static isSDKeventInit = false;
+
+	static NO_CHANNEL_IMAGE_URL;
+	static NO_USER_PROFILE_IMAGE_URL;
+	static DOWNLOAD_BUTTON_WHITE_IMAGE_URL;
+	static DOWNLOAD_BUTTON_BLACK_IMAGE_URL;
 
 	/** @type { Channel } */
 	currentChannel;
@@ -49,21 +48,27 @@ export default class Chat {
 	chatMap = new ChatMap();
 
 	constructor() {
+		this.#initialize();
+	}
+
+	async #initialize() {
 		if (!Chat.isSDKeventInit) {
 			window.CHAT = this;
 
-			this.#initializeSDKeventListner();
-			this.#initChannels();
-
+			await this.#initAssets();
+			await this.#initializeSDKeventListner();
+			await this.#initChannels();
 			Chat.isSDKeventInit = true;
-		}
+		} else throw new Error("isSDKeventInit is already true");
 	}
 
 	async #initializeSDKeventListner() {
-		await User.TALKPLUS_CLIENT.on("event", (event) => {
-			if (event.type === "message") this.receiveMessage(event.message);
-			else if (event.type === "channelAdded") this.receiveChannel(event.channel);
-			else if (event.type === "channelRemoved") {
+		await User.TALKPLUS_CLIENT.on("event", async (event) => {
+			if (event.type === "message") {
+				this.receiveMessage(event.message);
+			} else if (event.type === "channelAdded") {
+				this.receiveChannel(event.channel);
+			} else if (event.type === "channelRemoved") {
 				console.log("one of my channels was removed");
 			} else if (event.type === "memberAdded") {
 				console.log("new channel member");
@@ -71,6 +76,30 @@ export default class Chat {
 				console.log("channel member left");
 			}
 		});
+	}
+
+	async #initAssets() {
+		let imageUrl;
+
+		imageUrl = await User.assetHandler.getStaticFileDataURL("no_picture_user.png");
+		Chat.NO_CHANNEL_IMAGE_URL = await User.assetHandler.getStaticFileDataURL(
+			"no_picture_user.png"
+		);
+
+		imageUrl = await User.assetHandler.getStaticFileDataURL("no_picture_user.png");
+		Chat.NO_USER_PROFILE_IMAGE_URL = await User.assetHandler.getStaticFileDataURL(
+			"no_picture_user.png"
+		);
+
+		imageUrl = await User.assetHandler.getStaticFileDataURL("download_white.png");
+		Chat.DOWNLOAD_BUTTON_WHITE_IMAGE_URL = await User.assetHandler.getStaticFileDataURL(
+			"download_white.png"
+		);
+
+		imageUrl = await User.assetHandler.getStaticFileDataURL("download_black.png");
+		Chat.DOWNLOAD_BUTTON_BLACK_IMAGE_URL = await User.assetHandler.getStaticFileDataURL(
+			"download_black.png"
+		);
 	}
 
 	async #initChannels() {
@@ -82,7 +111,10 @@ export default class Chat {
 	}
 
 	// TODO : 예외 처리
-	activate(channelId) {
+	// TODO : 스크롤 최하단 이동 버그
+	// 이미지/동영상 등이 많을때, 태그를 다 붙여 넣고 스크롤 다운 -> 동영상/이미지 등이
+	// lazyLoading되면서 스크롤이 밀려 올라감... (Promise 처리?)
+	activateChannel(channelId) {
 		this.currentChannel = this.chatMap.getChannel(channelId);
 		this.currentChannel.showName();
 
@@ -94,27 +126,24 @@ export default class Chat {
 		this.chatMap.set(new Channel(channelObj), new Message(channelObj.id));
 	}
 
-	sendMessage(obj) {
+	// TODO : 메세지가 간혈적으로 전송이 되지 않음 (비동기적 문제)
+	// insert되고 DB에서 동기화 되기 전에 id가 select 되는거 같음
+	async receiveMessage(messageObj) {
+		let isCurrentChannel = messageObj.channelId == this.currentChannel.id;
+
+		if (isCurrentChannel) await this.currentMessage.loadReceivedMessage(messageObj);
+		else this.chatMap.getChannel(messageObj.channelId).increaseUnreadCount();
+	}
+
+	async sendMessage(obj) {
 		/** @type { Message }*/
 		const message = this.chatMap.getMessage(this.currentChannel.id);
 
-		if (typeof obj == "string") message.sendText(obj);
+		if (typeof obj == "string") await message.sendText(obj);
 		else if (obj instanceof File) {
-			if (obj.type.includes("image")) {
-				message.sendImage(obj);
-			} else if (obj.type.includes("video")) {
-				message.sendVideo(obj);
-			} else {
-				message.sendFile(obj);
-			}
-		}
-	}
-
-	receiveMessage(messageObj) {
-		if (messageObj.channelId == this.currentChannel) currentMessage.receive(messageObj);
-		else {
-			this.chatMap.getMessage(messageObj.channelId).receive(messageObj);
-			// this.notify(messageObj);
+			if (obj.type.includes("image")) await message.sendImage(obj);
+			else if (obj.type.includes("video")) await message.sendVideo(obj);
+			else await message.sendFile(obj);
 		}
 	}
 

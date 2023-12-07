@@ -13,7 +13,7 @@ export default class ChannelEvent {
 
 			let channelId = li.data("id");
 
-			window.CHAT.activate(channelId);
+			window.CHAT.activateChannel(channelId);
 		});
 	}
 }

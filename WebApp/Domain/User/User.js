@@ -4,25 +4,35 @@ import APIHandler from "../../Util/APIHandler.js";
 import Chat from "../Chat/Chat.js";
 
 import CommonDOMevent from "../../_Global/Event/DOMevent.js";
+import AssetHandler from "../../Util/AssetHandler.js";
+
+import { API_URL } from "../../_Global/Constant/API.js";
 
 export default class User {
 	static INFO = null;
 	static CLIENT;
 
-	static CI_API = new APIHandler();
-	static CHAT_API = new APIHandler("http://192.168.2.65:3000/");
+	static CI_API;
+	static CHAT_API;
+
+	/** @type AssetHandler */
+	static assetHandler;
 
 	constructor() {
+		User.CI_API = new APIHandler(API_URL.CI_INTRANET);
+		User.CHAT_API = new APIHandler(API_URL.CHAT_SERVER);
+		User.assetHandler = new AssetHandler();
+
 		this.#initializeChat();
 	}
 
 	async #initializeChat() {
 		let initResult = await Preloader.USER_init();
-		if (!initResult) throw new Error();
+		if (!initResult) throw new Error("유저 정보가 잘못되었습니다.");
 
 		this.CHAT = new Chat();
 
-		this.#initializeChatEventListner();
+		await this.#initializeChatEventListner();
 	}
 
 	async #initializeChatEventListner() {
