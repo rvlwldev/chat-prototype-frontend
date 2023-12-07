@@ -3,14 +3,6 @@ export default class Renderer {
 
 	constructor() {}
 
-	static requestPermission() {
-		if (Notification.permission !== "granted")
-			Notification.requestPermission(() => {
-				if (Notification.permission == "granted") Renderer.activeNotification = true;
-				else Renderer.activeNotification = false;
-			});
-	}
-
 	static alert(message) {
 		if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.alert(message);
 		else alert(message);
@@ -34,18 +26,26 @@ export default class Renderer {
 			if (Notification.permission === "granted") this.showWindowNotification(title, body);
 			else {
 				Notification.requestPermission().then(() => console.log(Notification.permission));
-				this.showWindowNotification(title, body);
+				Renderer.showWindowNotification(title, body);
 			}
 		}
 	}
 
+	static requestBrowserNotificatePermission() {
+		if (Notification.permission !== "granted")
+			Notification.requestPermission(() => {
+				if (Notification.permission == "granted") Renderer.activeNotification = true;
+				else Renderer.activeNotification = false;
+			});
+	}
+
 	static showWindowNotification(title, body) {
-		if (this.activeNotification) this.activeNotification.close();
+		if (Renderer.activeNotification) Renderer.activeNotification.close();
 
-		this.activeNotification = new Notification(title, { body: body });
+		Renderer.activeNotification = new Notification(title, { body: body });
 
-		this.activeNotification.onshow = () => {};
-		this.activeNotification.onclick = () => {};
-		this.activeNotification.onclose = () => {};
+		Renderer.activeNotification.onshow = () => {};
+		Renderer.activeNotification.onclick = () => {};
+		Renderer.activeNotification.onclose = () => {};
 	}
 }
