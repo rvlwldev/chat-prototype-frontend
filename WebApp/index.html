@@ -13,14 +13,14 @@
 
     <div class="sidebar">
 
-      <div class="search">
+      <!-- <div class="search">
         <input id="searchInput" type="text" placeholder="검색 ... ">
         <i class="fa fa-search"></i>
-      </div>
+      </div> -->
 
       <div class="contacts">
+        <p>채널목록!</p>
         <ul id="channelList">
-
           <li>
             <a>
               <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
@@ -28,29 +28,29 @@
                 <div class="name" data-id="" data-time=1>사용자1</div>
                 <div class="message">마지막 메세지....</div>
               </div>
-              <div class="notification">16</div>
+              <div class="unread-count">16</div>
             </a>
           </li>
 
-          <li class="active">
+          <li class="active" data-id="TEST2">
             <a>
-              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
               <div class="contact">
                 <div class="name" data-id="" data-time="3">사용자2</div>
                 <div class="message">마지막 메세지....</div>
               </div>
-              <div class="notification">99+</div>
+              <div class="unread-count">99+</div>
             </a>
           </li>
 
           <li>
             <a>
-              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
               <div class="contact">
                 <div class="name" data-id="" data-time="2">사용자3</div>
                 <div class="message">마지막 메세지....</div>
               </div>
-              <div class="notification">6</div>
+              <div class="unread-count">6</div>
             </a>
           </li>
 
@@ -62,11 +62,9 @@
     <div class="content">
 
       <div class="message-header">
-        <div class="user-info">
-          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
-          <div class="user">
-            <div id="channelTitle" class="name">사용자1 외 1명</div>
-          </div>
+        <div class="channel-info">
+          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
+          <div id="channelTitle" class="name"></div>
         </div>
 
         <div class="actions">
@@ -76,6 +74,13 @@
                 <i class="fa fa-info-circle"></i>
               </a>
             </li>
+
+            <li>
+              <a href="#" id="info">
+                <i class="fa fa-search"></i>
+              </a>
+            </li>
+
             <li>
               <a href="#">
                 <i class="fa fa-ellipsis-v"></i>
@@ -85,42 +90,37 @@
         </div>
       </div>
 
-      <div id="messageList" class="message-content">
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="검색 ... ">
+      </div>
 
+      <div id="messageList" class="message-content">
+        <!-- 
         <div class="date">2023년 10월10일</div>
 
         <div class="message me">
-          <div class="bubble">
-            내 메세지
-          </div>
+          <div class="bubble">내 메세지</div>
           <div class="time">1월 1일 오전 04:23</div>
         </div>
 
         <div class="message me">
-          <div class="bubble">
-            내 메세지2
-          </div>
+          <div class="bubble">내 메세지2</div>
           <div class="time">1월 1일 오전 04:23</div>
         </div>
 
-        <div class="noti">
-          *** 참가했습니다.
-        </div>
+        <div class="noti">*** 참가했습니다.</div>
 
         <div class="message">
           <img class="user-image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
           <div class="name">이름</div>
-          <div class="bubble">
-            상대 메세지
-          </div>
+          <div class="bubble">상대 메세지</div>
           <div class="time">1월 1일 오후 04:23</div>
         </div>
 
         <div class="message">
-          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
+          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
           <div class="name">이름</div>
           <img class="image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
-
           <div class="time">1월 1일 오후 04:23</div>
         </div>
 
@@ -128,14 +128,7 @@
           <img class="image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
           <div class="time">1월 1일 오전 04:23</div>
         </div>
-
-        <div class="message me">
-          <img class="image" src="http://192.168.2.65:3000/asset/img/no_picture_user.png">
-          <div class="time">1월 1일 오전 04:23</div>
-        </div>
-
-
-
+        -->
       </div>
 
       <div class="message-form">
