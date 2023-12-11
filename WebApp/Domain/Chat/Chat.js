@@ -1,4 +1,5 @@
 import Renderer from "../../_Global/Event/Renderer.js";
+import Search from "../Search/Search.js";
 import User from "../User/User.js";
 
 import Channel from "./Channel.js";
@@ -48,6 +49,8 @@ export default class Chat {
 	chatMap = new ChatMap();
 
 	constructor() {
+		this.search = new Search();
+
 		this.#initialize();
 	}
 
@@ -58,6 +61,7 @@ export default class Chat {
 			await this.#initAssets();
 			await this.#initializeSDKeventListner();
 			await this.#initChannels();
+			this.#initShortcut();
 			Chat.isSDKeventInit = true;
 		} else throw new Error("isSDKeventInit is already true");
 	}
@@ -110,6 +114,15 @@ export default class Chat {
 		});
 	}
 
+	#initShortcut() {
+		$(document).on("keydown", (e) => {
+			if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+				e.preventDefault();
+				this.search.toggle();
+			}
+		});
+	}
+
 	// TODO : 예외 처리
 	// TODO : 스크롤 최하단 이동 버그
 	// 이미지/동영상 등이 많을때, 태그를 다 붙여 넣고 스크롤 다운 -> 동영상/이미지 등이
@@ -117,6 +130,8 @@ export default class Chat {
 	activateChannel(channelId) {
 		this.currentChannel = this.chatMap.getChannel(channelId);
 		this.currentChannel.showName();
+
+		this.search.hide();
 
 		this.currentMessage = this.chatMap.getMessage(channelId);
 		this.currentMessage.load();
@@ -126,8 +141,6 @@ export default class Chat {
 		this.chatMap.set(new Channel(channelObj), new Message(channelObj.id));
 	}
 
-	// TODO : 메세지가 간혈적으로 전송이 되지 않음 (비동기적 문제)
-	// insert되고 DB에서 동기화 되기 전에 id가 select 되는거 같음
 	async receiveMessage(messageObj) {
 		let isCurrentChannel = messageObj.channelId == this.currentChannel.id;
 
