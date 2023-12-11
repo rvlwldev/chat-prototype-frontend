@@ -1,0 +1,122 @@
+.content .actions .search i {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 37px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	color: #999999;
+}
+
+.search {
+	position: relative;
+	height: 50px;
+	min-height: 50px;
+	padding: 0 10px;
+	display: flex;
+	align-items: center;
+	border-bottom: 2px solid #ddd;
+	/* border-radius: 40px; */
+}
+
+.search input {
+	width: 100%;
+	height: 30px;
+	background: white;
+	border-radius: 30px;
+	font-size: 14px;
+	padding: 0 35px 0 15px;
+}
+
+.search .search-result-list {
+	position: absolute;
+	top: 100%;
+	width: 40%;
+
+	left: 15px;
+	margin-right: 100px;
+
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 추가 (옵션) */
+	/* list-style: none; */
+
+	background-color: #e0e0e0;
+}
+
+.search-result-list .result {
+	/* padding: 8px; */
+	border-top: 1px solid #ddd;
+	margin-bottom: 1px;
+}
+
+.search-result-list .result p {
+	display: flex;
+	font-size: 13px;
+	color: red;
+	font-style: italic;
+}
+
+.search-result-list .result a {
+	display: block;
+	align-items: center;
+	text-decoration: none;
+	color: #333;
+	padding: 8px;
+	border-bottom: 1px solid #ddd;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.search-result-list .result a:hover {
+	background-color: #f0f0f0;
+	color: #007bff;
+	cursor: pointer;
+}
+
+.search-result-list .result-title {
+	font-weight: bold;
+	color: #333;
+	margin-top: 2px;
+}
+
+.search-result-list .result-category {
+	color: #888;
+}
+
+.search:focus .search-result-list {
+	display: block;
+}
+
+/*
+.chat .sidebar .search {
+	position: relative;
+	height: 50px;
+	min-height: 50px;
+	padding: 0 10px;
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid #ddd;
+}
+
+.chat .sidebar .search input {
+	width: 100%;
+	height: 30px;
+	background: white;
+	border-radius: 30px;
+	font-size: 14px;
+	padding: 0 35px 0 15px;
+}
+
+
+.chat .sidebar .search i {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 37px;
+	height: 50px;
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	color: #999999;
+} 
+*/

@@ -1,101 +1,118 @@
 <html>
 
 <head>
-  <title>Chat UI Design</title>
-  <meta charset="utf-8">
+    <title>Chat UI Design</title>
+    <meta charset="utf-8">
 
-  <link rel="stylesheet" type="text/css" href="./Asset/css/style.css">
+    <link rel="stylesheet" type="text/css" href="./Asset/css/style.css">
 
 </head>
 
 <body>
-  <div class="chat">
+    <div class="chat">
 
-    <div class="sidebar">
+        <div class="sidebar">
+            <div class="contacts">
+                <p>채널목록!</p>
+                <ul id="channelList">
+                    <li>
+                        <a>
+                            <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
+                            <div class="contact">
+                                <div class="name" data-id="" data-time=1>사용자1</div>
+                                <div class="message">마지막 메세지....</div>
+                            </div>
+                            <div class="unread-count">16</div>
+                        </a>
+                    </li>
 
-      <!-- <div class="search">
-        <input id="searchInput" type="text" placeholder="검색 ... ">
-        <i class="fa fa-search"></i>
-      </div> -->
+                    <li class="active" data-id="TEST2">
+                        <a>
+                            <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
+                            <div class="contact">
+                                <div class="name" data-id="" data-time="3">사용자2</div>
+                                <div class="message">마지막 메세지....</div>
+                            </div>
+                            <div class="unread-count">99+</div>
+                        </a>
+                    </li>
 
-      <div class="contacts">
-        <p>채널목록!</p>
-        <ul id="channelList">
-          <li>
-            <a>
-              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
-              <div class="contact">
-                <div class="name" data-id="" data-time=1>사용자1</div>
-                <div class="message">마지막 메세지....</div>
-              </div>
-              <div class="unread-count">16</div>
-            </a>
-          </li>
+                    <li>
+                        <a>
+                            <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
+                            <div class="contact">
+                                <div class="name" data-id="" data-time="2">사용자3</div>
+                                <div class="message">마지막 메세지....</div>
+                            </div>
+                            <div class="unread-count">6</div>
+                        </a>
+                    </li>
 
-          <li class="active" data-id="TEST2">
-            <a>
-              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
-              <div class="contact">
-                <div class="name" data-id="" data-time="3">사용자2</div>
-                <div class="message">마지막 메세지....</div>
-              </div>
-              <div class="unread-count">99+</div>
-            </a>
-          </li>
+                </ul>
+            </div>
 
-          <li>
-            <a>
-              <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
-              <div class="contact">
-                <div class="name" data-id="" data-time="2">사용자3</div>
-                <div class="message">마지막 메세지....</div>
-              </div>
-              <div class="unread-count">6</div>
-            </a>
-          </li>
-
-        </ul>
-      </div>
-
-    </div>
-
-    <div class="content">
-
-      <div class="message-header">
-        <div class="channel-info">
-          <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
-          <div id="channelTitle" class="name"></div>
         </div>
 
-        <div class="actions">
-          <ul>
-            <li>
-              <a href="#" id="info">
-                <i class="fa fa-info-circle"></i>
-              </a>
-            </li>
+        <div class="content">
 
-            <li>
-              <a href="#" id="info">
-                <i class="fa fa-search"></i>
-              </a>
-            </li>
+            <div class="message-header">
+                <div class="channel-info">
+                    <img src="http://192.168.2.65:3000/asset/img/no_picture_user.png" />
+                    <div id="channelTitle" class="name"></div>
+                </div>
 
-            <li>
-              <a href="#">
-                <i class="fa fa-ellipsis-v"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
+                <div class="actions">
+                    <ul>
+                        <li>
+                            <a href="#" id="info">
+                                <i class="fa fa-info-circle"></i>
+                            </a>
+                        </li>
 
-      <div class="search">
-        <input id="searchInput" type="text" placeholder="검색 ... ">
-      </div>
+                        <li>
+                            <a href="#" id="info">
+                                <i id="searchButton" class="fa fa-search"></i>
+                            </a>
+                        </li>
 
-      <div id="messageList" class="message-content">
-        <!-- 
+                        <li>
+                            <a href="#">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="search">
+                <input id="searchInput" type="text" placeholder="검색 ... ">
+
+                <div class="search-result-list">
+                    <ul>
+                        <li class="result" id="searchChannels">
+                            <div class="result-title">채널</div>
+
+                            <a> 테스트 전체 공개 채팅방01 </a>
+                            <a> 테스트 전체 공개 채팅방02 </a>
+                            <a> 테스트 전체 공개 채팅방03 </a>
+                        </li>
+
+                        <li class="result" id="searchMessages">
+                            <div class="result-title">메세지</div>
+                            <p>검색 결과가 없습니다.</p>
+                        </li>
+
+                        <li class="result" id="searchUsers">
+                            <div class="result-title">사용자</div>
+                            <p>검색 결과가 없습니다.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="messageList" class="message-content">
+
+                <!-- sample
         <div class="date">2023년 10월10일</div>
 
         <div class="message me">
@@ -129,48 +146,48 @@
           <div class="time">1월 1일 오전 04:23</div>
         </div>
         -->
-      </div>
+            </div>
 
-      <div class="message-form">
-        <ul>
-          <li class="input">
-            <input id="textInput" type="text" placeholder="메시지 입력..">
-          </li>
+            <div class="message-form">
+                <ul>
+                    <li class="input">
+                        <input id="textInput" type="text" placeholder="메시지 입력..">
+                    </li>
 
-          <li class="send-btn">
-            <a id="sendBtn" href="">
-              <i class="fas fa-paper-plane"></i>
-            </a>
-          </li>
+                    <li class="send-btn">
+                        <a id="sendBtn" href="">
+                            <i class="fas fa-paper-plane"></i>
+                        </a>
+                    </li>
 
-          <li class="image-btn">
-            <a id="imageBtn" href="">
-              <i class="fa fa-image"></i>
-            </a>
-          </li>
+                    <li class="image-btn">
+                        <a id="imageBtn" href="">
+                            <i class="fa fa-image"></i>
+                        </a>
+                    </li>
 
-          <li class="video-btn">
-            <a id="videoBtn" href="">
-              <i class="fa fa-film"></i>
-            </a>
-          </li>
+                    <li class="video-btn">
+                        <a id="videoBtn" href="">
+                            <i class="fa fa-film"></i>
+                        </a>
+                    </li>
 
-          <li class="file-btn">
-            <a id="fileBtn" href="">
-              <i class="fas fa-file"></i>
-            </a>
-          </li>
+                    <li class="file-btn">
+                        <a id="fileBtn" href="">
+                            <i class="fas fa-file"></i>
+                        </a>
+                    </li>
 
-        </ul>
+                </ul>
 
-        <input style="display: none;" type="file" name="file" id="image" accept=".png, .jpg, .webp" />
-        <input style="display: none;" type="file" name="file" id="video" accept=".mp4" />
-        <input style="display: none;" type="file" name="file" id="file" />
+                <input style="display: none;" type="file" name="file" id="image" accept=".png, .jpg, .webp" />
+                <input style="display: none;" type="file" name="file" id="video" accept=".mp4" />
+                <input style="display: none;" type="file" name="file" id="file" />
 
-      </div>
+            </div>
 
+        </div>
     </div>
-  </div>
 
 </body>
 
