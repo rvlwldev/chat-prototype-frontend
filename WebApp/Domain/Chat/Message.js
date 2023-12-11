@@ -50,13 +50,14 @@ export default class Message extends MessageTemplate {
 		super.clear();
 
 		let requestURL = `channels/${this.#channelId}/messages`;
+		let lastestMessage = this.array.getLatest();
 
-		if (this.array.length > 0)
-			requestURL += `?lastMessageId=${this.array.getLatest().id}&order=latest`;
+		if (this.array.length > 0 && lastestMessage)
+			requestURL += `?lastMessageId=${lastestMessage.id}&order=latest`;
 
 		await User.CHAT_API.get(requestURL).then((data) => {
-			this.array.unshift(data.messages);
-			super.prependAll(data.messages);
+			this.array.unshift(...data.messages);
+			super.prependAll(this.array);
 			this.hasHistory = data.hasHistory;
 		});
 	}

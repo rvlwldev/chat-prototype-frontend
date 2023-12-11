@@ -67,16 +67,12 @@ export default class MessageTemplate extends MessageEvent {
 		return $(`
 			<div class="message me" data-userId="${message.userId}" data-messageId="${message.id}">
 				<div class="bubble">${message.text}</div>
-			<div class="message me" data-userId="${message.userId}" data-messageId="${message.id}">
-				<div class="bubble">${message.text}</div>
 				<div class="time">${Stringify.getTimestampsString(message.createdAt)}</div>
 			</div>
 		`);
 	}
 	toMyFileHTML(message) {
 		return $(`
-			<div class="message me" data-userId="${message.userId}" data-messageId="${message.id}">
-				<div class="bubble file">
 			<div class="message me" data-userId="${message.userId}" data-messageId="${message.id}">
 				<div class="bubble file">
 					<div class="file-name">${message.fileName}</div>

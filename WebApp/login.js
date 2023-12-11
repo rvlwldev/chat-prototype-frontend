@@ -19,19 +19,6 @@ function CI_SERVER_LOGIN() {
 	const PW = $("#password").val();
 	const DB = "cug";
 
-	// 개발용
-	// admin01 ~ admin10
-	if (ID.startsWith("admin")) {
-		let name = "관리자" + ID.match(/\d+/g)[0];
-
-		redirectToApp({
-			id: ID,
-			name: name,
-		});
-
-		return;
-	}
-
 	if (!ID || !PW) {
 		appAlert("아이디/비밀번호를 입력해주세요");
 		$("#username").focus();
