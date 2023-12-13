@@ -1,48 +1,48 @@
 import User from "../User/User.js";
 
 export default class Search {
-	#div;
-	#input;
-	#noResult;
+	div;
+	input;
+	noResult;
 
 	constructor() {
-		this.#div = $(".search");
-		this.#input = $("#searchInput");
+		this.div = $(".search");
+		this.input = $("#searchInput");
 		this.button = $("#searchButton");
 
-		this.#noResult = $(`<p>검색 결과가 없습니다.</p>`);
+		this.noResult = $(`<p>검색 결과가 없습니다.</p>`);
 
 		this.#initDOMevent();
+		this.hide();
 	}
 
 	#initDOMevent() {
-		this.#input.on("keypress", (/** @type KeyboardEvent */ e) => {
+		this.input.on("keypress", (/** @type KeyboardEvent */ e) => {
 			let searchValue = $(e.target).val();
-
 			if (e.keyCode == 13 && searchValue) this.search($(e.target).val());
 		});
 
-		this.button.on("click", this.toggle);
+		this.button.on("click", this.toggle.bind(this));
 
 		this.clear();
 	}
 
 	clear() {
-		this.#input.val("");
-		this.#div.find(".result").find("p, a").remove();
+		this.input.val("");
+		this.div.find(".result").find("p, a").remove();
 	}
 
 	hide() {
-		this.#div.hide();
+		this.div.hide();
 	}
 
 	toggle() {
-		let display = this.#div.css("display");
+		let display = this.div.css("display");
 
 		if (display == "none") {
-			this.#input.val("");
-			this.#div.show();
-			this.#input.trigger("focus");
+			this.input.val("");
+			this.div.show();
+			this.input.trigger("focus");
 		} else this.hide();
 	}
 
@@ -59,7 +59,7 @@ export default class Search {
 
 	async #searchChannels(text) {
 		return User.CHAT_API.get(`search/channels/${User.INFO.id}/${text}`).then((res) => {
-			if (res.length < 1) $("#searchChannels").append(this.#noResult.clone());
+			if (res.length < 1) $("#searchChannels").append(this.noResult.clone());
 			else {
 				for (const channel of res) {
 					$("#searchChannels").append(`<a> ${channel.name} </a>`);
@@ -70,7 +70,7 @@ export default class Search {
 
 	async #searchMessages(text) {
 		return User.CHAT_API.get(`search/messages/${User.INFO.id}/${text}`).then((res) => {
-			if (res.length < 1) $("#searchMessages").append(this.#noResult.clone());
+			if (res.length < 1) $("#searchMessages").append(this.noResult.clone());
 			else {
 				for (const message of res) {
 					$("#searchMessages").append(`<a> ${message.text} </a>`);
@@ -81,7 +81,7 @@ export default class Search {
 
 	async #searchMembers(text) {
 		return User.CHAT_API.get(`search/users/${User.INFO.id}/${text}`).then((res) => {
-			if (res.length < 1) $("#searchUsers").append(this.#noResult.clone());
+			if (res.length < 1) $("#searchUsers").append(this.noResult.clone());
 			else {
 				for (const user of res) {
 					console.log(user);

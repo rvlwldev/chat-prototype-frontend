@@ -30,6 +30,9 @@ export default class User {
 		let initResult = await Preloader.USER_init();
 		if (!initResult) throw new Error("유저 정보가 잘못되었습니다.");
 
+		console.log("접속확인");
+		console.log(await User.CHAT_API.get("").then((res) => res));
+
 		this.CHAT = new Chat();
 
 		await this.#initializeChatEventListner();

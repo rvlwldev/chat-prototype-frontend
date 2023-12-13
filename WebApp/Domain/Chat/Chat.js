@@ -3,6 +3,7 @@ import Search from "../Search/Search.js";
 import User from "../User/User.js";
 
 import Channel from "./Channel.js";
+import MessageEvent from "./Event/MessageEvent.js";
 import Message from "./Message.js";
 
 class ChatMap extends Map {
@@ -63,6 +64,11 @@ export default class Chat {
 			await this.#initChannels();
 			this.#initShortcut();
 			Chat.isSDKeventInit = true;
+
+			this.#joinFirstChannel();
+
+			// test
+			MessageEvent.initEvent();
 		} else throw new Error("isSDKeventInit is already true");
 	}
 
@@ -107,7 +113,7 @@ export default class Chat {
 	}
 
 	async #initChannels() {
-		await User.CHAT_API.get(`channels/${User.INFO.id}`).then((channels) => {
+		await User.CHAT_API.get(`users/${User.INFO.id}/channels`).then((channels) => {
 			channels.forEach((channel) => {
 				this.chatMap.set(new Channel(channel), new Message(channel.id));
 			});
@@ -123,6 +129,14 @@ export default class Chat {
 		});
 	}
 
+	#joinFirstChannel() {
+		let channelId = Array.from(this.chatMap.keys())[0].id;
+		let first = $(`li[data-id=${channelId}]`).trigger("click");
+
+		first.addClass("active");
+		this.activateChannel(channelId);
+	}
+
 	// TODO : 예외 처리
 	// TODO : 스크롤 최하단 이동 버그
 	// 이미지/동영상 등이 많을때, 태그를 다 붙여 넣고 스크롤 다운 -> 동영상/이미지 등이
@@ -130,11 +144,16 @@ export default class Chat {
 	activateChannel(channelId) {
 		this.currentChannel = this.chatMap.getChannel(channelId);
 		this.currentChannel.showName();
+		this.currentChannel.removeUnreadCount(channelId);
 
 		this.search.hide();
 
 		this.currentMessage = this.chatMap.getMessage(channelId);
 		this.currentMessage.load();
+	}
+
+	async createChannel(paramObj) {
+		console.log(paramObj);
 	}
 
 	receiveChannel(channelObj) {
@@ -166,5 +185,10 @@ export default class Chat {
 		let body = messageObj.senderId + " : " + messageObj.text;
 
 		Renderer.notify(title, body);
+	}
+
+	// test
+	testCallback() {
+		console.log("asdasd12222");
 	}
 }

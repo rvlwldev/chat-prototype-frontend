@@ -1,24 +1,28 @@
 import Renderer from "../../../_Global/Event/Renderer.js";
 
 export default class MessageEvent {
-	constructor(self) {
-		this._self = self;
+	constructor() {}
+
+	static initEvent() {
+		Renderer.registerDynamicContextMenu("userImageContextMenu", "1:1 채팅", CHAT.createChannel);
 	}
 
 	onUserImageClickEvent(HTML) {
-		try {
-			HTML.find(".user-image").on("click", this.userImageClickEvent);
-		} catch (err) {
-			console.log(HTML);
-		}
-	}
-
-	userImageContextMenuEvent(e) {
-		let userid = $(e.target).siblings("div .bubble").data("userid");
-		Renderer.showContextMenu(e, "userImageContextMenu", { userid: userid });
+		HTML.find(".user-image").on("click", (e) => {
+			let targetName = $(e.target).siblings(".name").text();
+			Renderer.alert(targetName + " 정보확인 준비중");
+		});
 	}
 
 	onUserImageContextMenuEvent(HTML) {
-		HTML.find(".user-image").on("contextmenu", this.userImageContextMenuEvent);
+		HTML.find(".user-image").on("contextmenu", (e) => {
+			let targetId = $(e.target).parent().data("userid");
+			let targetName = $(e.target).siblings(".name").text();
+
+			Renderer.showContextMenu(e, "userImageContextMenu", {
+				userId: targetId,
+				username: targetName,
+			});
+		});
 	}
 }

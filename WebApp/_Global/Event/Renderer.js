@@ -9,15 +9,16 @@ export default class Renderer {
 	}
 
 	static registerDynamicContextMenu(groupName, menuName, callback) {
-		if (typeof nativeDesktopApp != "undefined") {
+		if (typeof nativeDesktopApp != "undefined")
 			nativeDesktopApp.register.contextMenu(groupName, menuName, callback.name, callback);
-		}
 	}
 
 	static async showContextMenu(/** @type MouseEvent */ e, registeredEventName, paramObj) {
 		e.preventDefault();
 		if (typeof nativeDesktopApp != "undefined")
 			nativeDesktopApp.trigger.contextMenu(e, registeredEventName, paramObj);
+		else {
+		}
 	}
 
 	static notify(title, body) {

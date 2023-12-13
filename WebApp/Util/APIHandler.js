@@ -3,7 +3,6 @@ export default class APIHandler {
 
 	constructor(url) {
 		if (!url) throw new Error("APIHandler needs API URL on constructor");
-
 		this.#URL = url;
 	}
 
@@ -23,6 +22,7 @@ export default class APIHandler {
 			data: FORM,
 			processData: false,
 			contentType: false,
+			// xhrFields: { withCredentials: true },
 		}).fail((err) => console.log(err));
 	}
 
@@ -31,6 +31,7 @@ export default class APIHandler {
 			method: method,
 			url: this.#URL + url,
 			data: body,
+			// xhrFields: { withCredentials: true },
 		});
 	}
 

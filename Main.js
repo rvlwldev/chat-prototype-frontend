@@ -116,6 +116,7 @@ function initCallbackEmitter() {
 		}
 
 		const { x, y } = position;
+
 		contextMenu.popup(MAIN_WINDOW, x, y);
 	});
 }

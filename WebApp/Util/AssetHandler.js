@@ -22,19 +22,3 @@ export default class AssetHandler {
 		});
 	}
 }
-
-/*
-return new Promise((resolve) => {
-			let requestFileURL = `asset/img/${fileName}`;
-
-			User.CHAT_API.get(requestFileURL).then((img) => {
-				const blob = new Blob([img], { type: "image/png" });
-				const reader = new FileReader();
-
-				reader.onloadend = () =>
-					resolve(reader.result.replace(/[\r\n]+/g, "").replace(/\s/g, ""));
-
-				reader.readAsDataURL(blob);
-			});
-		});
-*/

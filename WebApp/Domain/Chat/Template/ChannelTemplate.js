@@ -36,6 +36,12 @@ export default class ChannelTemplate extends ChannelEvent {
 		$("li[data-id='" + channelId + "'] a").append(counter);
 	}
 
+	removeUnreadCount(channelId) {
+		$("li[data-id='" + channelId + "'] a")
+			.find(".unread-count")
+			.remove();
+	}
+
 	getHTML(channel) {
 		return $(`
 			<li data-id="${channel.id}">

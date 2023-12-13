@@ -40,18 +40,26 @@ async function initStaticUserInfo() {
 		else throw new AuthenticationError();
 	}
 
-	let body = { userId: User.INFO.id, username: User.INFO.name };
-	await User.CHAT_API.post("users/login", body).catch((err) => {
-		console.error(err);
-		throw new AuthenticationError("로그인 정보 검증 실패");
-	});
+	// let body = { userId: User.INFO.id, username: User.INFO.name };
+	// await User.CHAT_API.post("users/login", body).catch((err) => {
+	// 	console.error(err);
+	// 	throw new AuthenticationError("로그인 정보 검증 실패");
+	// });
 }
 
 async function initTalkPlusSDK() {
-	const SDK_INFO = await User.CI_API.get("token", { userId: User.INFO.id }).then((response) => {
-		User.TALKPLUS_CLIENT = new TalkPlus.Client({ appId: response.AppID });
-		return response;
+	// const SDK_INFO = await User.CI_API.get("token", { userId: User.INFO.id }).then((response) => {
+	// 	User.TALKPLUS_CLIENT = new TalkPlus.Client({ appId: response.AppID });
+	// 	return response;
+	// });
+
+	await User.CHAT_API.get("users/appid").then(async (appId) => {
+		User.TALKPLUS_CLIENT = await new TalkPlus.Client({ appId: appId });
 	});
+
+	const SDK_INFO = await User.CHAT_API.post("users/token", { userId: User.INFO.id }).then(
+		(res) => res
+	);
 
 	await User.TALKPLUS_CLIENT.loginWithToken({
 		userId: SDK_INFO.user.id,

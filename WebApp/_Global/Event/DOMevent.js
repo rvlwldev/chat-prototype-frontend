@@ -21,8 +21,7 @@ export default class CommonDOMevent {
 			e.preventDefault();
 		});
 
-		// TODO : 검색기능
-		$("#searchInput");
+		$(document).on("contextmenu", (e) => e.preventDefault());
 	}
 
 	static setMessageInputEnterCallback(callback) {
@@ -105,34 +104,4 @@ export default class CommonDOMevent {
 			$("#messageList").on("wheel", async (e) => await event(e));
 		},
 	};
-
-	// static setScrollEvent(callback) {
-	// 	let isScrollingUp = false;
-	// 	let savedScrollTop = 0;
-
-	// 	// 스크롤 타겟 선택
-	// 	const $messageList = $("#messageList");
-
-	// 	$messageList.on("scroll", (e) => {
-	// 		const currentScrollTop = $messageList.scrollTop();
-
-	// 		// 스크롤이 최상단에 도달했을 때
-	// 		if (currentScrollTop === 0) {
-	// 			if (!isScrollingUp) {
-	// 				// 최상단에 도달하면서 처음으로 스크롤을 위로 올린 경우에만 콜백 실행
-	// 				isScrollingUp = true;
-	// 				savedScrollTop = currentScrollTop;
-	// 				callback.bind(this)();
-	// 			}
-	// 		} else {
-	// 			// 스크롤이 최상단이 아닌 경우 플래그 초기화
-	// 			isScrollingUp = false;
-	// 		}
-	// 	});
-
-	// 	// 이벤트가 끝날 때 스크롤 위치 복원
-	// 	$messageList.on("scrollend", () => {
-	// 		$messageList.scrollTop(savedScrollTop);
-	// 	});
-	// }
 }

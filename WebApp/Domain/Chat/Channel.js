@@ -18,9 +18,7 @@ export default class Channel extends ChannelTemplate {
 	}
 
 	async #getInitChannelInfo(channelId) {
-		return await User.CHAT_API.get(`channels/${channelId}/info`).then((res) =>
-			this.append(res)
-		);
+		return await User.CHAT_API.get(`channels/${channelId}`).then((res) => this.append(res));
 	}
 
 	increaseUnreadCount() {
@@ -40,8 +38,8 @@ export default class Channel extends ChannelTemplate {
 	}
 
 	async join() {
-		return await User.CHAT_API.post(`channels/${this.id}/members/add`, {
-			members: [User.INFO.id],
+		return await User.CHAT_API.post(`channels/${this.id}/users`, {
+			users: [User.INFO.id],
 		}).then((channel) => {
 			super.append(channel);
 			return channel;

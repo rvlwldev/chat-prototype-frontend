@@ -26,6 +26,7 @@ export default class Message extends MessageTemplate {
 
 	constructor(channelId) {
 		super();
+
 		this.#channelId = channelId;
 
 		this.array = new MessageArray();
@@ -81,9 +82,12 @@ export default class Message extends MessageTemplate {
 		let requestURL = `channels/${this.#channelId}/messages/${messageObj.id}`;
 		const message = await User.CHAT_API.get(requestURL).then((data) => data.message);
 
-		this.array.push(message);
-
-		if (message.userId != User.INFO.id) super.append(message, true);
+		try {
+			this.array.push(message);
+			if (message.userId != User.INFO.id) super.append(message, true);
+		} catch (err) {
+			await this.loadReceivedMessage(messageObj);
+		}
 	}
 
 	async sendText(text) {
