@@ -64,6 +64,8 @@ export default class MessageTemplate extends MessageEvent {
 	}
 
 	toMyTextHTML(message) {
+		message.text = message.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		
 		return $(`
 			<div class="message me" data-userId="${message.userId}" data-messageId="${message.id}">
 				<div class="bubble">${message.text}</div>
@@ -108,6 +110,7 @@ export default class MessageTemplate extends MessageEvent {
 
 	toTextHTML(message) {
 		let userImage = message.profileImageUrl || Chat.NO_USER_PROFILE_IMAGE_URL;
+		message.text = message.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 		return $(`
 			<div class="message"  data-userId="${message.userId}" data-messageId="${message.id}">
