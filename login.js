@@ -1,3 +1,7 @@
+import { API_URL } from "./WebApp/_Global/Constant/API";
+
+console.log(API_URL);
+
 sessionStorage.setItem("userinfo", null);
 const appAlert = (message) => {
 	if (typeof nativeDesktopApp != "undefined") nativeDesktopApp.alert(message);
@@ -26,7 +30,7 @@ async function LOGIN() {
 
 	await $.ajax({
 		type: "POST",
-		url: "http://localhost:3000/users/login",
+		url: API_URL.CHAT_SERVER + "users/login",
 		data: { id: ID, pw: PW },
 		success: (data) => redirectToApp(data),
 		error: function (xhr, status, error) {
@@ -55,7 +59,7 @@ async function checkUser() {
 
 	let check = await $.ajax({
 		type: "POST",
-		url: "http://localhost:3000/users/check",
+		url: API_URL.CHAT_SERVER + "users/check",
 		data: { id: ID, pw: PW },
 
 		success: (res) => res,
@@ -79,7 +83,7 @@ async function checkUser() {
 async function registerUser(ID, NM, PW) {
 	let isRegisterd = await $.ajax({
 		type: "POST",
-		url: "http://localhost:3000/users/check",
+		url: API_URL.CHAT_SERVER + "users/check",
 		data: { id: ID, name: NM, pw: PW },
 
 		success: (res) => res,
@@ -90,7 +94,7 @@ async function registerUser(ID, NM, PW) {
 	if (isRegisterd) {
 		await $.ajax({
 			type: "POST",
-			url: "http://localhost:3000/users/login",
+			url: API_URL.CHAT_SERVER + "users/login",
 			data: { id: ID, pw: PW },
 			success: (data) => redirectToApp(data),
 			error: function (xhr, status, error) {

@@ -43,7 +43,7 @@ function createMainWindow() {
 
 	// NOTE : 개발용
 	MAIN_WINDOW.webContents.openDevTools();
-	MAIN_WINDOW.loadFile("login.html");
+	MAIN_WINDOW.loadFile("./WebApp/login.html");
 	MAIN_WINDOW.on("closed", () => app.quit());
 }
 
